@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Aenaon Run Academy</title>
+    <meta name="description" id="pageDesc" content="Προπονητική πλατφόρμα για δρομείς.">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>∞</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="data.js?v=100"></script>
+    <script src="strava.js?v=10"></script>
+    <script src="menu.js?v=5"></script>
+    <style>
+        :root{--brand:#22c55e;--brand-dark:#16a34a;--brand-light:#dcfce7;--strava:#FC4C02;--strava-light:#fff0eb;--purple:#8b5cf6;--purple-light:#ede9fe;--red:#ef4444;--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;--gray-300:#cbd5e1;--gray-400:#94a3b8;--gray-500:#64748b;--gray-600:#475569;--gray-700:#334155;--gray-800:#1e293b;--gray-900:#0f172a;--radius:12px;--shadow:0 4px 6px -1px rgba(0,0,0,0.1)}
+        *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif;background:#fff;color:var(--gray-800);line-height:1.6}h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;font-weight:700}a{text-decoration:none;color:inherit}button{font-family:inherit;cursor:pointer;border:none}.container{max-width:900px;margin:0 auto;padding:0 1.5rem}
+        
+        /* Header & Nav */
+        .header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.98);backdrop-filter:blur(10px);border-bottom:1px solid var(--gray-200);padding:0.75rem 0}.header-inner{display:flex;align-items:center;justify-content:space-between}.logo{display:flex;align-items:center;gap:0.5rem}.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:1rem;font-weight:700}.logo-text{font-family:'Space Grotesk';font-weight:700;font-size:1rem}.logo-text span{color:var(--brand)}
+        .nav{display:flex;gap:0.25rem}.nav-item{position:relative}.nav-link{display:flex;align-items:center;gap:0.25rem;padding:0.5rem 0.875rem;font-weight:500;font-size:0.8125rem;color:var(--gray-600);border-radius:6px}.nav-link:hover{background:var(--gray-100);color:var(--gray-900)}.nav-link svg{width:14px;height:14px}.nav-dropdown{position:absolute;top:100%;left:0;background:white;border:1px solid var(--gray-200);border-radius:8px;box-shadow:var(--shadow);min-width:180px;opacity:0;visibility:hidden;transform:translateY(10px);transition:0.2s;z-index:101}.nav-item:hover .nav-dropdown{opacity:1;visibility:visible;transform:translateY(4px)}.nav-dropdown a{display:block;padding:0.625rem 1rem;font-size:0.8125rem;color:var(--gray-600)}.nav-dropdown a:hover{background:var(--gray-50)}
+        
+        /* Hero */
+        .hero{padding:2.5rem 0 2rem;text-align:center;background:linear-gradient(180deg,var(--gray-50) 0%,white 100%)}.hero-title{font-size:clamp(1.5rem,4vw,2rem);margin-bottom:0.5rem}.hero-title span{color:var(--brand)}.hero-subtitle{font-size:0.9375rem;color:var(--gray-500);max-width:450px;margin:0 auto 1.5rem}.stats-row{display:flex;justify-content:center;gap:2rem}.stat-value{font-family:'Space Grotesk';font-size:1.25rem;font-weight:700;color:var(--brand)}.stat-label{font-size:0.6875rem;color:var(--gray-500);text-transform:uppercase}
+        
+        /* Toolbar */
+        .toolbar{display:flex;justify-content:space-between;align-items:center;margin:1.5rem 0;gap:1rem}.search-wrap{flex:1;min-width:200px;position:relative}.search-wrap svg{position:absolute;left:0.875rem;top:50%;transform:translateY(-50%);color:var(--gray-400);width:16px}.search-input{width:100%;padding:0.625rem 1rem 0.625rem 2.5rem;border:1px solid var(--gray-200);border-radius:8px;font-size:0.875rem;background:var(--gray-50)}.search-input:focus{outline:none;border-color:var(--brand);background:white}.toolbar-actions{display:flex;gap:0.375rem}.filter-btn{padding:0.5rem 0.75rem;border:1px solid var(--gray-200);border-radius:6px;background:white;font-size:0.75rem;font-weight:500;color:var(--gray-600)}.filter-btn.active{background:var(--gray-800);color:white;border-color:var(--gray-800)}.sort-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid var(--gray-200);border-radius:6px;background:white;color:var(--gray-500)}.sort-btn.desc{color:var(--purple)}
+        
+        /* Module - Button INSIDE header */
+        .module-section{margin-bottom:1.5rem}
+        .module-header{display:flex;align-items:center;gap:0.75rem;padding:0.875rem 1rem;background:var(--gray-900);color:white;border-radius:var(--radius) var(--radius) 0 0;cursor:pointer;transition:0.15s}.module-header:hover{background:var(--gray-800)}.module-chevron{width:18px;height:18px;opacity:0.7;transition:transform 0.2s;flex-shrink:0}.module-section.collapsed .module-chevron{transform:rotate(-90deg)}.module-section.collapsed .module-body{display:none}.module-icon{width:36px;height:36px;background:rgba(255,255,255,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}.module-icon svg{width:18px;height:18px}.module-info{flex:1;min-width:0}.module-name{font-size:1rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.module-meta{font-size:0.6875rem;opacity:0.7}.module-count{background:rgba(255,255,255,0.15);padding:0.25rem 0.625rem;border-radius:999px;font-size:0.6875rem;flex-shrink:0}
+        
+        /* Red Plan Button - INSIDE header on right */
+        .plan-btn-header{display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.875rem;background:var(--red);color:white;border-radius:8px;font-weight:600;font-size:0.6875rem;white-space:nowrap;margin-left:0.75rem;flex-shrink:0;transition:0.15s;box-shadow:0 2px 8px rgba(239,68,68,0.3)}.plan-btn-header:hover{background:#dc2626;transform:scale(1.02)}.plan-btn-header svg{width:14px;height:14px}.plan-btn-header .badge{background:white;color:var(--red);padding:0.125rem 0.375rem;border-radius:999px;font-size:0.5625rem;margin-left:0.25rem}
+        
+        .module-body{background:white;border:1px solid var(--gray-200);border-top:none;border-radius:0 0 var(--radius) var(--radius);padding:1rem}
+        
+        /* Timeline */
+        .timeline{position:relative;padding-left:1.5rem}.timeline::before{content:'';position:absolute;left:0.5rem;top:0;bottom:0;width:2px;background:var(--gray-200)}.lesson-item{position:relative;padding:0.75rem 0;border-bottom:1px solid var(--gray-100)}.lesson-item:last-child{border-bottom:none}.lesson-item::before{content:'';position:absolute;left:-1.25rem;top:1.125rem;width:10px;height:10px;background:var(--gray-300);border-radius:50%;border:2px solid white}.lesson-item.read::before{background:var(--brand)}.lesson-item.video::before{background:var(--purple)}.lesson-content{display:flex;align-items:center;gap:0.75rem;cursor:pointer}.lesson-content:hover .lesson-title{color:var(--brand)}.lesson-type{width:28px;height:28px;background:var(--gray-100);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--gray-500);flex-shrink:0}.lesson-type.video{background:var(--purple-light);color:var(--purple)}.lesson-type.article{background:var(--brand-light);color:var(--brand-dark)}.lesson-type svg{width:14px;height:14px}.lesson-info{flex:1;min-width:0}.lesson-title{font-weight:600;font-size:0.875rem;margin-bottom:0.125rem}.lesson-desc{font-size:0.75rem;color:var(--gray-500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lesson-date{font-size:0.625rem;color:var(--gray-400);flex-shrink:0}.lesson-actions{display:flex;gap:0.25rem;opacity:0;flex-shrink:0}.lesson-item:hover .lesson-actions{opacity:1}.lesson-action{width:28px;height:28px;border-radius:6px;background:var(--gray-100);display:flex;align-items:center;justify-content:center;color:var(--gray-400)}.lesson-action:hover{background:var(--gray-200)}.lesson-action.active{background:var(--brand-light);color:var(--brand)}.lesson-action.favorited{background:#fef3c7;color:#f59e0b}.lesson-action svg{width:14px;height:14px}
+        
+        /* Fullscreen Views */
+        .fullscreen-view{position:fixed;inset:0;background:white;z-index:200;overflow-y:auto;display:none}.fullscreen-view.active{display:block}.fs-header{position:sticky;top:0;background:white;border-bottom:1px solid var(--gray-200);padding:0.875rem 1.5rem;display:flex;justify-content:space-between;align-items:center;z-index:10}.fs-back{display:flex;align-items:center;gap:0.375rem;padding:0.5rem 0.875rem;background:var(--gray-100);border-radius:6px;font-weight:500;font-size:0.8125rem;color:var(--gray-600)}.fs-back:hover{background:var(--gray-200)}.fs-back svg{width:16px;height:16px}.fs-actions{display:flex;gap:0.375rem}.fs-action{display:flex;align-items:center;gap:0.25rem;padding:0.5rem 0.75rem;border-radius:6px;font-size:0.75rem;font-weight:500;background:var(--gray-100);color:var(--gray-600)}.fs-action:hover{background:var(--gray-200)}.fs-action.active{background:var(--brand-light);color:var(--brand-dark)}.fs-action.favorited{background:#fef3c7;color:#f59e0b}.fs-action svg{width:14px;height:14px}
+        .fs-content{max-width:720px;margin:0 auto;padding:2rem 1.5rem 6rem}.fs-category{display:inline-block;padding:0.25rem 0.5rem;background:var(--gray-100);color:var(--gray-600);border-radius:4px;font-size:0.625rem;font-weight:700;text-transform:uppercase;margin-bottom:0.75rem}.fs-title{font-size:1.75rem;margin-bottom:0.75rem;line-height:1.3}.fs-meta{display:flex;gap:1rem;font-size:0.8125rem;color:var(--gray-500);margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--gray-200)}.fs-meta span{display:flex;align-items:center;gap:0.25rem}.fs-meta svg{width:14px;height:14px}
+        .fs-image{width:100%;border-radius:var(--radius);margin-bottom:1.5rem}.fs-video{margin-bottom:2rem;border-radius:var(--radius);overflow:hidden}.fs-video iframe{width:100%;aspect-ratio:16/9;border:none}.fs-body{font-size:1rem;line-height:1.8;color:var(--gray-700)}.fs-body h2{font-size:1.25rem;margin:2rem 0 1rem}.fs-body p{margin-bottom:1rem}.fs-body ul,.fs-body ol{margin:1rem 0;padding-left:1.5rem}
+        
+        /* Prev/Next Nav */
+        .lesson-nav{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:3rem;padding-top:2rem;border-top:1px solid var(--gray-200)}.lesson-nav-item{padding:1rem;background:var(--gray-50);border-radius:var(--radius);cursor:pointer}.lesson-nav-item:hover{background:var(--gray-100)}.lesson-nav-item.next{text-align:right}.lesson-nav-label{font-size:0.625rem;text-transform:uppercase;color:var(--gray-400);margin-bottom:0.25rem}.lesson-nav-title{font-weight:600;font-size:0.875rem;color:var(--gray-800)}
+        
+        /* Back to Top - z-index 999 to show above everything */
+        .back-to-top{position:fixed;bottom:2rem;right:2rem;width:48px;height:48px;background:var(--gray-800);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;visibility:hidden;transition:0.3s;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:999}.back-to-top.visible{opacity:1;visibility:visible}.back-to-top:hover{background:var(--brand);transform:translateY(-3px)}.back-to-top svg{width:22px;height:22px}
+        
+        /* Plan View */
+        .plan-view{background:var(--gray-50)}.plan-hero{background:linear-gradient(135deg,var(--purple),#7c3aed);color:white;padding:2rem 1.5rem}.plan-hero-inner{max-width:900px;margin:0 auto}.plan-hero h1{font-size:1.5rem;margin-bottom:0.5rem}.plan-hero p{opacity:0.85;margin-bottom:1rem}.plan-stats{display:flex;gap:2rem;flex-wrap:wrap}.plan-stat{text-align:center}.plan-stat-value{font-size:1.75rem;font-weight:700}.plan-stat-label{font-size:0.6875rem;opacity:0.8}.plan-body{max-width:900px;margin:0 auto;padding:1.5rem}
+        
+        /* Week Grid */
+        .week-container{margin-bottom:1.5rem;background:white;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}.week-header{display:flex;align-items:center;justify-content:space-between;padding:0.875rem 1rem;background:linear-gradient(135deg,var(--purple),#7c3aed);color:white}.week-title h3{font-size:0.9375rem}.week-title .period{font-size:0.6875rem;opacity:0.85}.week-stats{display:flex;gap:1rem}.week-stat{text-align:center}.week-stat-value{font-weight:700;font-size:0.9375rem}.week-stat-label{font-size:0.5rem;opacity:0.8}
+        .week-grid{display:grid;grid-template-columns:repeat(7,1fr)}.day-col{border-right:1px solid var(--gray-200);min-height:100px}.day-col:last-child{border-right:none}
+        /* Date format: Δ22-Δεκ */
+        .day-col-header{padding:0.5rem 0.25rem;background:var(--gray-100);text-align:center;font-size:0.6875rem;font-weight:600;border-bottom:1px solid var(--gray-200);line-height:1.1}.day-col-header .day-label{color:var(--gray-800);font-size:0.75rem;font-weight:700}.day-col.today .day-col-header{background:var(--brand-light)}
+        .day-col-body{padding:0.25rem}.plan-workout{padding:0.375rem;border-radius:4px;margin-bottom:0.25rem;cursor:pointer;font-size:0.5625rem}.plan-workout.planned{background:var(--purple-light);border:1px solid var(--purple);color:var(--purple)}.plan-workout.actual{background:var(--strava-light);border:1px solid var(--strava);color:var(--strava)}.plan-workout .title{font-weight:600}.plan-workout .meta{opacity:0.8}
+        .comparison-badge{display:inline-block;padding:0.0625rem 0.25rem;border-radius:3px;font-size:0.4375rem;font-weight:700;margin-top:0.125rem}.comparison-badge.match{background:#d1fae5;color:#065f46}.comparison-badge.close{background:#fef3c7;color:#92400e}.comparison-badge.off{background:#fee2e2;color:#991b1b}
+        
+        /* Workout Modal */
+        .workout-modal{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:300;padding:1rem}.workout-modal.active{display:flex}.workout-detail{background:white;border-radius:16px;width:100%;max-width:600px;max-height:90vh;overflow:hidden}.workout-detail-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--gray-200)}.workout-detail-header h2{font-size:1.125rem}.workout-detail-close{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:var(--gray-100);border-radius:6px;color:var(--gray-500)}.workout-detail-body{padding:1.25rem;overflow-y:auto;max-height:calc(90vh - 70px)}
+        .workout-comparison{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem}.comparison-card{border-radius:var(--radius);padding:0.875rem;text-align:center}.comparison-card.planned{background:var(--purple-light);border:2px solid var(--purple)}.comparison-card.actual{background:var(--strava-light);border:2px solid var(--strava)}.comparison-card-title{font-size:0.625rem;font-weight:700;text-transform:uppercase;margin-bottom:0.375rem;opacity:0.8}.comparison-card-value{font-size:1.5rem;font-weight:700}.comparison-card.planned .comparison-card-value{color:var(--purple)}.comparison-card.actual .comparison-card-value{color:var(--strava)}
+        .strava-section{background:var(--gray-50);border-radius:var(--radius);padding:1rem;margin-bottom:1rem}.strava-section-title{font-size:0.8125rem;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.375rem}.strava-section-title svg{width:16px;height:16px;color:var(--strava)}.strava-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem}.strava-stat-card{background:white;padding:0.5rem;border-radius:6px;text-align:center}.strava-stat-value{font-size:1rem;font-weight:700;color:var(--strava)}.strava-stat-label{font-size:0.5rem;color:var(--gray-500);text-transform:uppercase}.chart-container{height:150px;margin-top:0.75rem}.strava-link{display:inline-flex;align-items:center;gap:0.375rem;padding:0.5rem 1rem;background:var(--strava);color:white;border-radius:6px;font-weight:600;font-size:0.75rem;margin-top:0.75rem}.strava-link svg{width:14px;height:14px}
+        
+        .footer{background:var(--gray-900);color:var(--gray-400);text-align:center;padding:2rem;font-size:0.75rem}.footer-logo{display:flex;align-items:center;justify-content:center;gap:0.375rem;margin-bottom:0.375rem;color:var(--gray-300);font-weight:600}.footer-logo svg{color:var(--brand);width:16px;height:16px}
+        
+        @media(max-width:768px){.week-grid{grid-template-columns:repeat(4,1fr)}.nav{display:none}.lesson-nav{grid-template-columns:1fr}.strava-stats-grid{grid-template-columns:repeat(2,1fr)}.plan-btn-header{padding:0.375rem 0.5rem;font-size:0.5625rem}.plan-btn-header svg{width:12px;height:12px}.plan-btn-header span{display:none}}
+        @media(max-width:480px){.week-grid{grid-template-columns:repeat(2,1fr)}.toolbar-actions{display:none}}
+    </style>
+</head>
+<body>
+    <header class="header"><div class="container"><div class="header-inner"><a href="/" class="logo"><div class="logo-icon">∞</div><div class="logo-text">AENAON<span>RUN</span></div></a><nav class="nav" id="mainNav"></nav></div></div></header>
+    
+    <section class="hero"><div class="container"><h1 class="hero-title">Building The Ultimate <span>Runner's Chassis</span></h1><p class="hero-subtitle">Video lessons, training plans και εργαλεία για να γίνεις καλύτερος δρομέας.</p><div class="stats-row"><div class="stat"><div class="stat-value" id="statLessons">0</div><div class="stat-label">Lessons</div></div><div class="stat"><div class="stat-value" id="statVideos">0</div><div class="stat-label">Videos</div></div><div class="stat"><div class="stat-value" id="statRuns">0</div><div class="stat-label">Activities</div></div></div></div></section>
+    
+    <main class="container" style="padding-bottom:3rem">
+        <div class="toolbar"><div class="search-wrap"><i data-lucide="search"></i><input type="text" class="search-input" id="searchInput" placeholder="Αναζήτηση..." oninput="renderModules()"></div><div class="toolbar-actions"><button class="filter-btn active" data-f="all" onclick="setFilter('all')">Όλα</button><button class="filter-btn" data-f="video" onclick="setFilter('video')">Video</button><button class="filter-btn" data-f="article" onclick="setFilter('article')">Article</button><button class="sort-btn" id="sortBtn" onclick="toggleSort()"><i data-lucide="arrow-down-up"></i></button></div></div>
+        <div id="modulesContainer"></div>
+    </main>
+    
+    <div class="fullscreen-view" id="lessonView">
+        <div class="fs-header"><button class="fs-back" onclick="closeLessonView()"><i data-lucide="arrow-left"></i>Πίσω</button><div class="fs-actions"><button class="fs-action" id="btnRead" onclick="toggleRead()"><i data-lucide="check-circle"></i></button><button class="fs-action" id="btnFavorite" onclick="toggleFavorite()"><i data-lucide="star"></i></button></div></div>
+        <div class="fs-content" id="lessonContent"></div>
+    </div>
+    
+    <div class="fullscreen-view plan-view" id="planView">
+        <div class="fs-header"><button class="fs-back" onclick="closePlanView()"><i data-lucide="arrow-left"></i>Πίσω</button><span id="planTitle" style="font-weight:600;font-size:0.875rem"></span></div>
+        <div class="plan-hero"><div class="plan-hero-inner"><h1 id="planHeroTitle">Training Plan</h1><p>Προπονητικό πρόγραμμα</p><div class="plan-stats"><div class="plan-stat"><div class="plan-stat-value" id="planWeeks">0</div><div class="plan-stat-label">Weeks</div></div><div class="plan-stat"><div class="plan-stat-value" id="planPlanned">0</div><div class="plan-stat-label">Planned</div></div><div class="plan-stat"><div class="plan-stat-value" id="planActual">0</div><div class="plan-stat-label">Actual</div></div><div class="plan-stat"><div class="plan-stat-value" id="planComplete">0%</div><div class="plan-stat-label">Done</div></div></div></div></div>
+        <div class="plan-body" id="planBody"></div>
+    </div>
+    
+    <div class="workout-modal" id="workoutModal"><div class="workout-detail"><div class="workout-detail-header"><h2 id="workoutDetailTitle">Workout</h2><button class="workout-detail-close" onclick="closeWorkoutModal()"><i data-lucide="x"></i></button></div><div class="workout-detail-body" id="workoutDetailBody"></div></div></div>
+    
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()"><i data-lucide="chevron-up"></i></button>
+    
+    <footer class="footer"><div class="footer-logo"><i data-lucide="infinity"></i>AENAON RUN</div><p>© 2024</p></footer>
+
+    <script>
+    let filter='all',sortOrder='asc',currentLessonId=null,currentModuleIdx=null,currentLessonIdx=null,currentPlanModuleId=null;
+    let userData=JSON.parse(localStorage.getItem('aenaonUser')||'{"read":[],"favorites":[]}');
+    let TRAINING_DATA={};
+    let collapsedModules=JSON.parse(localStorage.getItem('frontendCollapsed')||'[]');
+    
+    // Greek months and days
+    const MONTHS=['Ιαν','Φεβ','Μαρ','Απρ','Μαϊ','Ιουν','Ιουλ','Αυγ','Σεπ','Οκτ','Νοε','Δεκ'];
+    const DAYS=['Κ','Δ','Τ','Τ','Π','Π','Σ'];
+
+    document.addEventListener('DOMContentLoaded',async()=>{
+        lucide.createIcons();
+        await loadTrainingData();
+        renderMenu();
+        handleRoute();
+        window.addEventListener('hashchange',handleRoute);
+        
+        // Scroll listeners for back-to-top
+        window.addEventListener('scroll',handleScroll);
+        document.getElementById('lessonView').addEventListener('scroll',handleScroll);
+        document.getElementById('planView').addEventListener('scroll',handleScroll);
+        
+        updateStats();
+        renderModules();
+    });
+
+    async function loadTrainingData(){try{const r=await fetch('training.json?v='+Date.now());if(r.ok)TRAINING_DATA=await r.json()}catch(e){TRAINING_DATA=JSON.parse(localStorage.getItem('trainingData')||'{}')}}
+    
+    function renderMenu(){
+        const nav=document.getElementById('mainNav');
+        if(typeof MENU_DATA==='undefined'||!MENU_DATA.length)return;
+        nav.innerHTML=MENU_DATA.map(item=>{
+            if(item.children?.length)return`<div class="nav-item"><a class="nav-link" href="${item.url}">${item.title}<i data-lucide="chevron-down"></i></a><div class="nav-dropdown">${item.children.map(c=>`<a href="${c.url}">${c.title}</a>`).join('')}</div></div>`;
+            return`<div class="nav-item"><a class="nav-link" href="${item.url}">${item.title}</a></div>`;
+        }).join('');
+        lucide.createIcons();
+    }
+    
+    function handleRoute(){
+        const hash=window.location.hash;
+        if(hash.startsWith('#lesson/')){const id=hash.replace('#lesson/','');const l=findLessonById(id);if(l)openLessonView(l.mi,l.li)}
+        else if(hash.startsWith('#plan/')){openPlanViewById(hash.replace('#plan/',''))}
+        else{closeLessonView();closePlanView()}
+    }
+    
+    // Back to top - works on main page AND inside fullscreen views
+    function handleScroll(){
+        let scrollY=0;
+        const fsLesson=document.getElementById('lessonView');
+        const fsPlan=document.getElementById('planView');
+        if(fsLesson.classList.contains('active'))scrollY=fsLesson.scrollTop;
+        else if(fsPlan.classList.contains('active'))scrollY=fsPlan.scrollTop;
+        else scrollY=window.scrollY;
+        document.getElementById('backToTop').classList.toggle('visible',scrollY>300);
+    }
+    
+    function scrollToTop(){
+        const fsLesson=document.getElementById('lessonView');
+        const fsPlan=document.getElementById('planView');
+        if(fsLesson.classList.contains('active'))fsLesson.scrollTo({top:0,behavior:'smooth'});
+        else if(fsPlan.classList.contains('active'))fsPlan.scrollTo({top:0,behavior:'smooth'});
+        else window.scrollTo({top:0,behavior:'smooth'});
+    }
+    
+    function findLessonById(id){if(typeof COURSE_DATA==='undefined')return null;for(let mi=0;mi<COURSE_DATA.length;mi++){for(let li=0;li<COURSE_DATA[mi].lessons.length;li++){if(COURSE_DATA[mi].lessons[li].id===id||COURSE_DATA[mi].lessons[li].slug===id)return{mi,li,lesson:COURSE_DATA[mi].lessons[li]}}}return null}
+    
+    function updateStats(){let lessons=0,videos=0;if(typeof COURSE_DATA!=='undefined'){COURSE_DATA.forEach(m=>{m.lessons.forEach(l=>{if(l.status!=='draft'){lessons++;if(l.type==='video')videos++}})})}animateCount('statLessons',lessons);animateCount('statVideos',videos);animateCount('statRuns',typeof STRAVA_DATA!=='undefined'?STRAVA_DATA.filter(a=>!a.hidden).length:0)}
+    function animateCount(id,target){const el=document.getElementById(id);let c=0;const step=Math.ceil(target/20);const iv=setInterval(()=>{c+=step;if(c>=target){c=target;clearInterval(iv)}el.textContent=c},40)}
+    function setFilter(f){filter=f;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.f===f));renderModules()}
+    function toggleSort(){sortOrder=sortOrder==='asc'?'desc':'asc';document.getElementById('sortBtn').classList.toggle('desc',sortOrder==='desc');renderModules()}
+    function toggleModuleCollapse(id,e){if(e)e.stopPropagation();const idx=collapsedModules.indexOf(id);if(idx===-1)collapsedModules.push(id);else collapsedModules.splice(idx,1);localStorage.setItem('frontendCollapsed',JSON.stringify(collapsedModules));renderModules()}
+    function fixImageUrl(url){if(!url)return'';if(url.includes('localhost'))return'';return url}
+
+    function renderModules(){
+        const container=document.getElementById('modulesContainer');
+        const search=document.getElementById('searchInput')?.value.toLowerCase()||'';
+        if(typeof COURSE_DATA==='undefined'){container.innerHTML='<p style="text-align:center;color:var(--gray-400);padding:2rem">Loading...</p>';return}
+        
+        let modules=[...COURSE_DATA];
+        if(sortOrder==='desc')modules=modules.reverse();
+        
+        let html='';
+        modules.forEach((mod,idx)=>{
+            const mi=sortOrder==='desc'?COURSE_DATA.length-1-idx:idx;
+            const lessons=mod.lessons.filter(l=>{
+                if(l.status==='draft')return false;
+                if(search&&!l.title.toLowerCase().includes(search))return false;
+                if(filter!=='all'&&l.type!==filter)return false;
+                return true;
+            });
+            if(lessons.length===0&&!search)return;
+            
+            const isCollapsed=collapsedModules.includes(mod.id);
+            const plan=TRAINING_DATA[mod.id]||{weeks:12,workouts:[]};
+            const workouts=plan.workouts||[];
+            let totalKm=0;workouts.forEach(w=>totalKm+=parseFloat(w.km)||0);
+            
+            // Module with button INSIDE header
+            html+=`<div class="module-section ${isCollapsed?'collapsed':''}">
+                <div class="module-header" onclick="toggleModuleCollapse('${mod.id}')">
+                    <i data-lucide="chevron-down" class="module-chevron"></i>
+                    <div class="module-icon"><i data-lucide="folder"></i></div>
+                    <div class="module-info">
+                        <div class="module-name">${mod.title}</div>
+                        <div class="module-meta">${lessons.length} lessons</div>
+                    </div>
+                    <span class="module-count">${lessons.length}</span>
+                    <button class="plan-btn-header" onclick="event.stopPropagation();openPlanView('${mod.id}')">
+                        <i data-lucide="calendar"></i>
+                        <span>${plan.weeks||12}w • ${totalKm.toFixed(0)}km</span>
+                        ${workouts.length?`<span class="badge">${workouts.length}</span>`:''}
+                    </button>
+                </div>
+                <div class="module-body">
+                    <div class="timeline">`;
+            
+            lessons.forEach(l=>{
+                const actualIdx=mod.lessons.indexOf(l);
+                const isRead=userData.read.includes(l.id);
+                const isFav=userData.favorites.includes(l.id);
+                html+=`<div class="lesson-item ${l.type} ${isRead?'read':''}">
+                    <div class="lesson-content" onclick="openLessonView(${mi},${actualIdx})">
+                        <div class="lesson-type ${l.type}"><i data-lucide="${l.type==='video'?'play':'file-text'}"></i></div>
+                        <div class="lesson-info">
+                            <div class="lesson-title">${l.title}</div>
+                            <div class="lesson-desc">${l.seoDesc||''}</div>
+                        </div>
+                        <div class="lesson-date">${l.date||''}</div>
+                        <div class="lesson-actions" onclick="event.stopPropagation()">
+                            <button class="lesson-action ${isRead?'active':''}" onclick="toggleReadDirect('${l.id}')"><i data-lucide="check"></i></button>
+                            <button class="lesson-action ${isFav?'favorited':''}" onclick="toggleFavoriteDirect('${l.id}')"><i data-lucide="star"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+            });
+            html+=`</div></div></div>`;
+        });
+        
+        container.innerHTML=html||'<p style="text-align:center;color:var(--gray-400);padding:2rem">No results</p>';
+        lucide.createIcons();
+    }
+
+    function openLessonView(mi,li){
+        const mod=COURSE_DATA[mi];const l=mod.lessons[li];
+        currentLessonId=l.id;currentModuleIdx=mi;currentLessonIdx=li;
+        history.pushState(null,'',`#lesson/${l.slug||l.id}`);
+        document.getElementById('pageTitle').textContent=(l.seoTitle||l.title)+' | Aenaon';
+        updateLessonActions();
+        
+        let html=`<span class="fs-category">${mod.title}</span><h1 class="fs-title">${l.title}</h1>
+        <div class="fs-meta"><span><i data-lucide="calendar"></i>${l.date||'-'}</span><span><i data-lucide="tag"></i>${l.type}</span></div>`;
+        
+        if(l.type==='video'&&l.youtubeId){
+            const vid=l.youtubeId.includes('youtube.com')?l.youtubeId.split('v=')[1]?.split('&')[0]:l.youtubeId;
+            html+=`<div class="fs-video"><iframe src="https://www.youtube.com/embed/${vid}" allowfullscreen></iframe></div>`;
+        }
+        
+        const imgUrl=fixImageUrl(l.image);
+        if(imgUrl&&l.type!=='video')html+=`<img class="fs-image" src="${imgUrl}" alt="${l.title}" loading="lazy">`;
+        
+        html+=`<div class="fs-body">${l.content||''}</div>`;
+        
+        // Prev/Next
+        const publishedLessons=mod.lessons.filter(x=>x.status!=='draft');
+        const currentIdx=publishedLessons.indexOf(l);
+        const prev=currentIdx>0?publishedLessons[currentIdx-1]:null;
+        const next=currentIdx<publishedLessons.length-1?publishedLessons[currentIdx+1]:null;
+        
+        html+=`<div class="lesson-nav">`;
+        if(prev)html+=`<div class="lesson-nav-item" onclick="openLessonView(${mi},${mod.lessons.indexOf(prev)})"><div class="lesson-nav-label">← Προηγούμενο</div><div class="lesson-nav-title">${prev.title}</div></div>`;
+        else html+=`<div></div>`;
+        if(next)html+=`<div class="lesson-nav-item next" onclick="openLessonView(${mi},${mod.lessons.indexOf(next)})"><div class="lesson-nav-label">Επόμενο →</div><div class="lesson-nav-title">${next.title}</div></div>`;
+        else html+=`<div></div>`;
+        html+=`</div>`;
+        
+        document.getElementById('lessonContent').innerHTML=html;
+        document.getElementById('lessonView').classList.add('active');
+        document.body.style.overflow='hidden';
+        document.getElementById('lessonView').scrollTop=0;
+        lucide.createIcons();
+    }
+
+    function closeLessonView(){document.getElementById('lessonView').classList.remove('active');document.body.style.overflow='';currentLessonId=null;history.pushState(null,'',window.location.pathname)}
+    function updateLessonActions(){document.getElementById('btnRead').classList.toggle('active',userData.read.includes(currentLessonId));document.getElementById('btnFavorite').classList.toggle('favorited',userData.favorites.includes(currentLessonId))}
+    function toggleRead(){if(!currentLessonId)return;toggleReadDirect(currentLessonId);updateLessonActions()}
+    function toggleFavorite(){if(!currentLessonId)return;toggleFavoriteDirect(currentLessonId);updateLessonActions()}
+    function toggleReadDirect(id){const idx=userData.read.indexOf(id);if(idx===-1)userData.read.push(id);else userData.read.splice(idx,1);localStorage.setItem('aenaonUser',JSON.stringify(userData));renderModules()}
+    function toggleFavoriteDirect(id){const idx=userData.favorites.indexOf(id);if(idx===-1)userData.favorites.push(id);else userData.favorites.splice(idx,1);localStorage.setItem('aenaonUser',JSON.stringify(userData));renderModules()}
+
+    function openPlanView(moduleId){
+        currentPlanModuleId=moduleId;
+        const mod=COURSE_DATA.find(m=>m.id===moduleId);
+        if(!mod)return;
+        const plan=TRAINING_DATA[moduleId]||{startDate:'',weeks:12,periods:[],workouts:[]};
+        history.pushState(null,'',`#plan/${moduleId}`);
+        document.getElementById('planHeroTitle').textContent=mod.title;
+        document.getElementById('planTitle').textContent=mod.title;
+        renderFullPlan(plan,moduleId);
+        document.getElementById('planView').classList.add('active');
+        document.body.style.overflow='hidden';
+        lucide.createIcons();
+    }
+    function openPlanViewById(id){const mod=COURSE_DATA.find(m=>m.id===id);if(mod)openPlanView(id)}
+    function closePlanView(){document.getElementById('planView').classList.remove('active');document.body.style.overflow='';currentPlanModuleId=null;history.pushState(null,'',window.location.pathname)}
+
+    // Format date as Δ22-Δεκ
+    function formatDayLabel(date){
+        const dayLetter=DAYS[date.getDay()];
+        const dayNum=date.getDate();
+        const monthName=MONTHS[date.getMonth()];
+        return `${dayLetter}${dayNum}-${monthName}`;
+    }
+
+    function renderFullPlan(plan,moduleId){
+        const weeks=plan.weeks||12;
+        const startDate=plan.startDate?new Date(plan.startDate):new Date();
+        const today=new Date().toDateString();
+        const workouts=plan.workouts||[];
+        
+        let totalPlanned=0,totalActual=0;
+        workouts.forEach(w=>{const km=parseFloat(w.km);if(!isNaN(km))totalPlanned+=km});
+        
+        if(plan.startDate&&typeof STRAVA_DATA!=='undefined'){
+            const start=new Date(plan.startDate);
+            const end=new Date(start);
+            end.setDate(end.getDate()+(weeks*7));
+            STRAVA_DATA.forEach(a=>{if(!a.hidden){const d=parseGreekDate(a.date);if(d&&d>=start&&d<=end)totalActual+=a.distance/1000}});
+        }
+        
+        document.getElementById('planWeeks').textContent=weeks;
+        document.getElementById('planPlanned').textContent=totalPlanned.toFixed(0);
+        document.getElementById('planActual').textContent=totalActual.toFixed(0);
+        document.getElementById('planComplete').textContent=totalPlanned>0?Math.round((totalActual/totalPlanned)*100)+'%':'0%';
+        
+        let html='';
+        for(let w=0;w<weeks;w++){
+            const weekStart=new Date(startDate);
+            weekStart.setDate(startDate.getDate()+(w*7));
+            const period=(plan.periods||[]).find(p=>p.weekStart<=(w+1)&&p.weekEnd>=(w+1));
+            let weekPlanned=0,weekActual=0;
+            
+            html+=`<div class="week-container">
+                <div class="week-header" style="${period?`background:linear-gradient(135deg,${period.color},${period.color}dd)`:''}">
+                    <div class="week-title"><h3>W${w+1}</h3>${period?`<div class="period">${period.name}</div>`:''}</div>
+                    <div class="week-stats">
+                        <div class="week-stat"><div class="week-stat-value week-p-${w}">-</div><div class="week-stat-label">Plan</div></div>
+                        <div class="week-stat"><div class="week-stat-value week-a-${w}">-</div><div class="week-stat-label">Act</div></div>
+                    </div>
+                </div>
+                <div class="week-grid">`;
+            
+            for(let d=0;d<7;d++){
+                const date=new Date(weekStart);
+                date.setDate(weekStart.getDate()+d);
+                const dateStr=date.toISOString().split('T')[0];
+                const isToday=date.toDateString()===today;
+                const dayWorkouts=workouts.filter(wo=>wo.date===dateStr);
+                const actual=getActualForDate(date);
+                
+                dayWorkouts.forEach(wo=>{const km=parseFloat(wo.km);if(!isNaN(km))weekPlanned+=km});
+                if(actual)weekActual+=actual.distance/1000;
+                
+                // Date format: Δ22-Δεκ
+                const dayLabel=formatDayLabel(date);
+                
+                html+=`<div class="day-col ${isToday?'today':''}">
+                    <div class="day-col-header"><span class="day-label">${dayLabel}</span></div>
+                    <div class="day-col-body">`;
+                
+                dayWorkouts.forEach(wo=>{
+                    html+=`<div class="plan-workout planned" onclick="openWorkoutDetail('${wo.id}','${moduleId}')">
+                        <div class="title">${wo.title}</div>
+                        <div class="meta">${wo.km||0}km</div>
+                    </div>`;
+                });
+                
+                if(actual){
+                    const planned=dayWorkouts[0];
+                    let comp='';
+                    if(planned){
+                        const pKm=parseFloat(planned.km)||0;
+                        const aKm=actual.distance/1000;
+                        const pct=pKm>0?Math.abs((aKm-pKm)/pKm)*100:100;
+                        if(pct<=10)comp='<div class="comparison-badge match">✓</div>';
+                        else if(pct<=25)comp='<div class="comparison-badge close">~</div>';
+                        else comp='<div class="comparison-badge off">✗</div>';
+                    }
+                    html+=`<div class="plan-workout actual" onclick="openWorkoutDetail(null,'${moduleId}','${actual.id}')">
+                        <div class="title">${actual.customTitle||actual.name}</div>
+                        <div class="meta">${(actual.distance/1000).toFixed(1)}km</div>
+                        ${comp}
+                    </div>`;
+                }
+                html+=`</div></div>`;
+            }
+            html+=`</div></div>`;
+            
+            // Update week stats after DOM render
+            setTimeout(((wk,wp,wa)=>()=>{
+                const p=document.querySelector('.week-p-'+wk);
+                const a=document.querySelector('.week-a-'+wk);
+                if(p)p.textContent=wp.toFixed(0);
+                if(a)a.textContent=wa.toFixed(0);
+            })(w,weekPlanned,weekActual),10);
+        }
+        
+        document.getElementById('planBody').innerHTML=html;
+        lucide.createIcons();
+    }
+
+    function openWorkoutDetail(workoutId,moduleId,stravaId=null){
+        const plan=TRAINING_DATA[moduleId]||{workouts:[]};
+        const workout=workoutId?(plan.workouts||[]).find(w=>w.id===workoutId):null;
+        const strava=stravaId&&typeof STRAVA_DATA!=='undefined'?STRAVA_DATA.find(a=>a.id==stravaId):null;
+        
+        let matchedStrava=strava;
+        if(workout&&!strava&&typeof STRAVA_DATA!=='undefined'){
+            const date=new Date(workout.date);
+            matchedStrava=STRAVA_DATA.find(a=>{const d=parseGreekDate(a.date);return d&&d.toDateString()===date.toDateString()&&!a.hidden});
+        }
+        
+        document.getElementById('workoutDetailTitle').textContent=workout?.title||matchedStrava?.customTitle||matchedStrava?.name||'Workout';
+        
+        let html='';
+        if(workout||matchedStrava){
+            html+=`<div class="workout-comparison">`;
+            if(workout)html+=`<div class="comparison-card planned"><div class="comparison-card-title">Planned</div><div class="comparison-card-value">${workout.km||0} km</div></div>`;
+            if(matchedStrava)html+=`<div class="comparison-card actual"><div class="comparison-card-title">Actual</div><div class="comparison-card-value">${(matchedStrava.distance/1000).toFixed(2)} km</div></div>`;
+            html+=`</div>`;
+        }
+        
+        if(workout?.description)html+=`<div class="strava-section"><p>${workout.description}</p></div>`;
+        
+        if(matchedStrava){
+            html+=`<div class="strava-section">
+                <h3 class="strava-section-title"><i data-lucide="activity"></i>Strava</h3>
+                <div class="strava-stats-grid">
+                    <div class="strava-stat-card"><div class="strava-stat-value">${(matchedStrava.distance/1000).toFixed(2)}</div><div class="strava-stat-label">KM</div></div>
+                    <div class="strava-stat-card"><div class="strava-stat-value">${formatDuration(matchedStrava.moving_time)}</div><div class="strava-stat-label">Time</div></div>
+                    <div class="strava-stat-card"><div class="strava-stat-value">${formatPace(matchedStrava.moving_time,matchedStrava.distance)}</div><div class="strava-stat-label">Pace</div></div>
+                    <div class="strava-stat-card"><div class="strava-stat-value">${matchedStrava.total_elevation_gain||0}m</div><div class="strava-stat-label">Elev</div></div>
+                </div>
+                <div class="chart-container"><canvas id="workoutChart"></canvas></div>
+                <a class="strava-link" href="https://www.strava.com/activities/${matchedStrava.id}" target="_blank"><i data-lucide="external-link"></i>View on Strava</a>
+            </div>`;
+        }
+        
+        document.getElementById('workoutDetailBody').innerHTML=html;
+        document.getElementById('workoutModal').classList.add('active');
+        lucide.createIcons();
+        
+        if(matchedStrava){
+            setTimeout(()=>{
+                const ctx=document.getElementById('workoutChart');
+                if(ctx){
+                    new Chart(ctx,{
+                        type:'line',
+                        data:{
+                            labels:matchedStrava.laps?matchedStrava.laps.map((_,i)=>`${i+1}`):['1'],
+                            datasets:[{
+                                label:'Pace',
+                                data:matchedStrava.laps?matchedStrava.laps.map(l=>l.moving_time/(l.distance/1000)/60):[matchedStrava.moving_time/(matchedStrava.distance/1000)/60],
+                                borderColor:'#FC4C02',
+                                backgroundColor:'rgba(252,76,2,0.1)',
+                                tension:0.3,
+                                fill:true
+                            }]
+                        },
+                        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{reverse:true}}}
+                    });
+                }
+            },100);
+        }
+    }
+
+    function closeWorkoutModal(){document.getElementById('workoutModal').classList.remove('active')}
+    function getActualForDate(date){if(typeof STRAVA_DATA==='undefined')return null;const ds=date.toLocaleDateString('el-GR');return STRAVA_DATA.find(a=>a.date===ds&&!a.hidden)}
+    function parseGreekDate(str){if(!str)return null;const parts=str.split('/');if(parts.length!==3)return null;return new Date(parts[2],parts[1]-1,parts[0])}
+    function formatDuration(sec){const m=Math.floor(sec/60);const s=Math.floor(sec%60);return m+':'+s.toString().padStart(2,'0')}
+    function formatPace(sec,meters){if(!meters)return'-';const pace=sec/(meters/1000);const m=Math.floor(pace/60);const s=Math.floor(pace%60);return m+':'+s.toString().padStart(2,'0')}
+    </script>
+</body>
+</html>

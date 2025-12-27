@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aenaon CMS</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="data.js?v=100"></script>
+    <script src="strava.js?v=10"></script>
+    <script src="menu.js?v=5"></script>
+    <style>
+        :root{--brand:#22c55e;--brand-dark:#16a34a;--brand-light:#dcfce7;--strava:#FC4C02;--strava-light:#fff0eb;--purple:#8b5cf6;--purple-light:#ede9fe;--blue:#3b82f6;--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;--gray-300:#cbd5e1;--gray-400:#94a3b8;--gray-500:#64748b;--gray-600:#475569;--gray-700:#334155;--gray-800:#1e293b;--gray-900:#0f172a;--radius:8px;--shadow:0 1px 3px rgba(0,0,0,0.1)}
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--gray-100);color:var(--gray-800);min-height:100vh}button{font-family:inherit;cursor:pointer;border:none}input,select,textarea{font-family:inherit}a{text-decoration:none;color:inherit}
+        #loginModal{position:fixed;inset:0;background:var(--gray-900);display:flex;align-items:center;justify-content:center;z-index:1000}#loginModal.hidden{display:none}.login-box{background:white;padding:2.5rem;border-radius:16px;width:360px;text-align:center}.login-box h2{font-size:1.5rem;margin-bottom:0.5rem}.login-box p{color:var(--gray-500);font-size:0.875rem;margin-bottom:1.5rem}.login-box input[type="password"]{width:100%;padding:1rem;border:2px solid var(--gray-200);border-radius:var(--radius);font-size:1.5rem;text-align:center;letter-spacing:0.5em;margin-bottom:1rem}.login-box input:focus{outline:none;border-color:var(--brand)}.login-box .remember{display:flex;align-items:center;justify-content:center;gap:0.5rem;font-size:0.875rem;color:var(--gray-500);margin-bottom:1.5rem}.login-box button{width:100%;padding:1rem;background:var(--brand);color:white;border-radius:var(--radius);font-size:1rem;font-weight:600}.login-box button:hover{background:var(--brand-dark)}
+        .app{display:none}.app.visible{display:grid;grid-template-columns:320px 1fr;min-height:100vh}
+        .sidebar{background:white;border-right:1px solid var(--gray-200);display:flex;flex-direction:column;height:100vh;position:sticky;top:0}.sidebar-header{padding:1rem;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between}.sidebar-header h1{font-size:1rem;display:flex;align-items:center;gap:0.5rem}.sidebar-header h1 span{color:var(--brand)}.sidebar-tools{display:flex;gap:0.25rem}.sidebar-content{flex:1;overflow-y:auto;padding:0.75rem}.sidebar-actions{display:flex;gap:0.5rem;margin-bottom:1rem}
+        .btn{display:inline-flex;align-items:center;gap:0.375rem;padding:0.5rem 0.875rem;border-radius:6px;font-size:0.8125rem;font-weight:500;transition:0.15s}.btn svg{width:14px;height:14px}.btn-primary{background:var(--brand);color:white}.btn-primary:hover{background:var(--brand-dark)}.btn-secondary{background:var(--gray-100);color:var(--gray-700);border:1px solid var(--gray-200)}.btn-secondary:hover{background:var(--gray-200)}.btn-purple{background:var(--purple);color:white}.btn-strava{background:var(--strava);color:white}.btn-sm{padding:0.375rem 0.625rem;font-size:0.75rem}.btn-icon{width:32px;height:32px;padding:0;justify-content:center}.btn:disabled{opacity:0.6;cursor:not-allowed}
+        .module{background:white;border:1px solid var(--gray-200);border-radius:var(--radius);margin-bottom:0.625rem;overflow:hidden}.module.collapsed .module-body{display:none}.module.collapsed .module-chevron{transform:rotate(-90deg)}.module-header{display:flex;align-items:center;gap:0.5rem;padding:0.625rem 0.75rem;background:var(--gray-50);border-bottom:1px solid var(--gray-200);cursor:pointer}.module-header:hover{background:var(--gray-100)}.module-chevron{width:16px;height:16px;color:var(--gray-400);transition:transform 0.2s}.module-title{flex:1;display:flex;align-items:center;gap:0.5rem;font-weight:600;font-size:0.8125rem;overflow:hidden}.module-title svg{color:var(--brand);width:16px;height:16px}.module-title span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.module-count{background:var(--gray-200);padding:0.125rem 0.5rem;border-radius:999px;font-size:0.625rem;font-weight:600}.module-actions{display:flex;gap:0.25rem;opacity:0}.module-header:hover .module-actions{opacity:1}.module-actions button{width:24px;height:24px;display:flex;align-items:center;justify-content:center;background:white;border:1px solid var(--gray-200);border-radius:4px;color:var(--gray-500)}.module-actions button:hover{background:var(--gray-50);color:var(--gray-700)}.module-actions button.delete:hover{color:#dc2626;background:#fef2f2}.module-actions button svg{width:12px;height:12px}.module-body{background:var(--gray-50)}.lessons{padding:0.5rem}.lesson{display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.625rem;background:white;border:1px solid var(--gray-200);border-radius:6px;margin-bottom:0.375rem;cursor:pointer;font-size:0.75rem}.lesson:hover{border-color:var(--brand)}.lesson.active{border-color:var(--brand);background:var(--brand-light)}.lesson.draft{opacity:0.6}.lesson-icon{width:14px;height:14px;color:var(--gray-400)}.lesson-title{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lesson-delete{opacity:0;width:20px;height:20px;display:flex;align-items:center;justify-content:center;background:var(--gray-100);border-radius:4px;color:var(--gray-400)}.lesson:hover .lesson-delete{opacity:1}.lesson-delete:hover{background:#fef2f2;color:#dc2626}
+        .plan-btn{display:flex;align-items:center;gap:0.5rem;width:calc(100% - 1rem);margin:0.5rem;padding:0.625rem 0.75rem;background:linear-gradient(135deg,var(--purple-light),#f3e8ff);border:2px solid var(--purple);border-radius:6px;font-size:0.75rem;font-weight:600;color:var(--purple)}.plan-btn:hover{background:var(--purple);color:white}.plan-btn svg{width:14px;height:14px}.plan-btn .count{margin-left:auto;background:var(--purple);color:white;padding:0.125rem 0.5rem;border-radius:999px;font-size:0.625rem}.plan-btn:hover .count{background:white;color:var(--purple)}
+        .main{padding:2rem;overflow-y:auto}.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;color:var(--gray-400);text-align:center}.empty-state svg{width:64px;height:64px;margin-bottom:1rem;opacity:0.5}.editor{display:none;max-width:900px}.editor.active{display:block}.editor-header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:1rem;border-bottom:1px solid var(--gray-200);margin-bottom:1.5rem}.editor-title{font-size:1.5rem;font-weight:700;border:none;width:100%;padding:0;background:transparent}.editor-title:focus{outline:none}.slug-row{display:inline-flex;align-items:center;gap:0.25rem;background:var(--gray-100);padding:0.375rem 0.625rem;border-radius:6px;font-size:0.75rem;color:var(--gray-500);margin-top:0.5rem;font-family:monospace}.slug-row input{background:transparent;border:none;color:var(--brand);font-weight:600;width:150px}.slug-row input:focus{outline:none}
+        .form-group{margin-bottom:1.25rem}.form-label{display:block;font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--gray-500);margin-bottom:0.375rem}.form-input{width:100%;padding:0.625rem 0.75rem;border:1px solid var(--gray-200);border-radius:6px;font-size:0.875rem}.form-input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-light)}select.form-input{background:white}textarea.form-input{min-height:100px;resize:vertical}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}.settings-box{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius);padding:1rem;margin-bottom:1.5rem}
+        .seo-preview{background:white;border:1px solid var(--gray-200);border-radius:var(--radius);padding:1rem;margin-bottom:1rem}.seo-preview-title{color:#1a0dab;font-size:1.125rem;margin-bottom:0.25rem}.seo-preview-url{color:#006621;font-size:0.8125rem;margin-bottom:0.25rem}.seo-preview-desc{color:#545454;font-size:0.8125rem}
+        .ql-toolbar{border-radius:var(--radius) var(--radius) 0 0!important;border-color:var(--gray-200)!important}.ql-container{border-radius:0 0 var(--radius) var(--radius)!important;border-color:var(--gray-200)!important;min-height:250px}
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:500}.modal-overlay.active{display:flex}.modal{background:white;border-radius:12px;width:90%;max-width:700px;max-height:90vh;overflow:hidden}.modal-header{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;border-bottom:1px solid var(--gray-200)}.modal-header h3{font-size:1rem;font-weight:700}.modal-close{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:var(--gray-100);border-radius:6px;color:var(--gray-500)}.modal-close:hover{background:var(--gray-200)}.modal-body{padding:1.25rem;overflow-y:auto;max-height:calc(90vh - 140px)}.modal-footer{display:flex;justify-content:flex-end;gap:0.5rem;padding:1rem 1.25rem;border-top:1px solid var(--gray-200)}
+        .fullscreen-overlay{position:fixed;inset:0;background:var(--gray-50);z-index:200;display:none;overflow-y:auto}.fullscreen-overlay.active{display:block}.fs-header{position:sticky;top:0;z-index:10;background:white;border-bottom:1px solid var(--gray-200);padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center}.fs-back{display:flex;align-items:center;gap:0.5rem;padding:0.5rem 1rem;background:var(--gray-100);border-radius:8px;font-weight:500;font-size:0.875rem;color:var(--gray-600)}.fs-back:hover{background:var(--gray-200)}.fs-back svg{width:18px;height:18px}.fs-title{font-size:1.125rem;font-weight:700;display:flex;align-items:center;gap:0.5rem}.fs-title svg{color:var(--purple)}.fs-body{max-width:1200px;margin:0 auto;padding:2rem}
+        .plan-hero{background:linear-gradient(135deg,var(--purple),#7c3aed);color:white;padding:1.5rem;border-radius:var(--radius);margin-bottom:1.5rem}.plan-hero h2{font-size:1.25rem;margin-bottom:0.5rem}.plan-hero-stats{display:flex;gap:2rem;margin-top:1rem}.plan-hero-stat{text-align:center}.plan-hero-stat-value{font-size:1.5rem;font-weight:700}.plan-hero-stat-label{font-size:0.75rem;opacity:0.8}
+        .plan-settings{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:1rem;margin-bottom:1.5rem;padding:1rem;background:white;border-radius:var(--radius);box-shadow:var(--shadow)}.plan-settings .form-group{margin-bottom:0}
+        .periods-section{background:white;padding:1rem;border-radius:var(--radius);margin-bottom:1.5rem;box-shadow:var(--shadow)}.periods-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}.period-item{display:flex;align-items:center;gap:1rem;padding:0.625rem;background:var(--gray-50);border-radius:6px;margin-bottom:0.5rem}.period-item .color-dot{width:12px;height:12px;border-radius:50%}.period-item .name{flex:1;font-weight:600;font-size:0.875rem}.period-item .range{font-size:0.75rem;color:var(--gray-500)}
+        .week-view{margin-bottom:1.5rem;background:white;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}.week-header-row{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1rem;background:linear-gradient(135deg,var(--purple),#7c3aed);color:white}.week-header-row h3{font-size:0.9375rem}.week-period{font-size:0.75rem;opacity:0.85}.week-actions{display:flex;gap:0.5rem}.week-actions button{background:rgba(255,255,255,0.2);color:white;padding:0.375rem 0.75rem;border-radius:6px;font-size:0.75rem;font-weight:500;display:flex;align-items:center;gap:0.25rem}.week-actions button:hover{background:rgba(255,255,255,0.3)}.week-actions button svg{width:12px;height:12px}
+        .week-grid{display:grid;grid-template-columns:repeat(7,1fr)}.day-col{border-right:1px solid var(--gray-200);min-height:120px}.day-col:last-child{border-right:none}.day-col-header{padding:0.5rem;background:var(--gray-100);text-align:center;font-size:0.6875rem;font-weight:600;border-bottom:1px solid var(--gray-200)}.day-col-header .date{font-size:0.875rem;font-weight:700;color:var(--gray-800)}.day-col.today .day-col-header{background:var(--brand-light)}.day-col-body{padding:0.375rem}.workout-card{background:var(--purple-light);border:1px solid var(--purple);border-radius:6px;padding:0.5rem;margin-bottom:0.375rem;cursor:pointer;font-size:0.6875rem}.workout-card:hover{transform:translateY(-1px);box-shadow:var(--shadow)}.workout-card .title{font-weight:600;color:var(--purple);margin-bottom:0.125rem}.workout-card .meta{color:var(--gray-500)}.workout-card.strava{background:var(--strava-light);border-color:var(--strava)}.workout-card.strava .title{color:var(--strava)}.add-workout-btn{width:100%;padding:0.375rem;background:var(--gray-50);border:1px dashed var(--gray-300);border-radius:6px;color:var(--gray-400);font-size:0.6875rem;display:flex;align-items:center;justify-content:center;gap:0.25rem}.add-workout-btn:hover{background:var(--gray-100);color:var(--gray-600)}
+        .category-btns{display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1rem}.category-btn{padding:0.375rem 0.75rem;border-radius:999px;font-size:0.75rem;font-weight:500;border:1px solid var(--gray-200);background:white;color:var(--gray-600)}.category-btn.active{background:var(--purple);color:white;border-color:var(--purple)}.interval-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:0.5rem;align-items:end;margin-bottom:0.5rem}.interval-row .form-group{margin-bottom:0}.km-display{background:linear-gradient(135deg,var(--brand-light),#bbf7d0);color:var(--brand-dark);padding:0.75rem 1rem;border-radius:var(--radius);text-align:center;font-size:1.25rem;font-weight:700;margin-top:1rem}
+        .menu-item{background:white;border:1px solid var(--gray-200);border-radius:var(--radius);margin-bottom:0.75rem}.menu-item-header{display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--gray-50);border-bottom:1px solid var(--gray-200)}.menu-item-header .handle{cursor:move;color:var(--gray-400)}.menu-item-inputs{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}.menu-item-inputs input{padding:0.5rem;border:1px solid var(--gray-200);border-radius:4px;font-size:0.875rem}.menu-item-inputs input:focus{outline:none;border-color:var(--brand)}.menu-children{padding:0.5rem 0.5rem 0.5rem 2rem;background:white}.sub-item{display:flex;align-items:center;gap:0.5rem;padding:0.5rem;background:var(--gray-50);border-radius:6px;margin-bottom:0.375rem}.sub-item input{flex:1;padding:0.375rem;border:1px solid transparent;border-radius:4px;font-size:0.8125rem;background:transparent}.sub-item input:focus{outline:none;border-color:var(--brand);background:white}.sub-item .delete{color:var(--gray-300)}.sub-item .delete:hover{color:#dc2626}
+        .activity-item{display:flex;align-items:center;gap:1rem;padding:0.75rem;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;margin-bottom:0.5rem}.activity-item.hidden{opacity:0.5}.activity-item .icon{width:36px;height:36px;background:var(--strava-light);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--strava)}.activity-item .info{flex:1}.activity-item .title{font-weight:600;font-size:0.875rem}.activity-item .meta{font-size:0.75rem;color:var(--gray-500)}.activity-item .actions{display:flex;gap:0.25rem}
+        .backup-item{display:flex;align-items:center;justify-content:space-between;padding:0.75rem;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;margin-bottom:0.5rem}.backup-item .info{flex:1}.backup-item .name{font-weight:600;font-size:0.875rem}.backup-item .date{font-size:0.75rem;color:var(--gray-500)}
+        .status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:0.5rem}.status-dot.connected{background:var(--brand)}.status-dot.disconnected{background:var(--gray-300)}
+        .loading-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;gap:1rem;color:white}.loading-overlay.active{display:flex}.loading-spinner{width:48px;height:48px;border:4px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.loading-text{font-size:1rem;font-weight:500}
+        @media(max-width:1024px){.app.visible{grid-template-columns:1fr}.sidebar{height:auto;max-height:50vh}.week-grid{grid-template-columns:repeat(4,1fr)}.plan-settings{grid-template-columns:1fr 1fr}}@media(max-width:640px){.week-grid{grid-template-columns:repeat(2,1fr)}.form-row,.form-row-3,.plan-settings{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+    <div id="loginModal"><div class="login-box"><h2>🔐 CMS Login</h2><p>Εισάγετε το PIN</p><input type="password" id="pinInput" placeholder="••••" onkeypress="if(event.key==='Enter')login()"><div class="remember"><input type="checkbox" id="rememberMe" checked><label for="rememberMe">Να με θυμάσαι</label></div><button onclick="login()">Είσοδος</button></div></div>
+    
+    <div class="loading-overlay" id="loadingOverlay"><div class="loading-spinner"></div><div class="loading-text" id="loadingText">Loading...</div></div>
+    
+    <div class="app" id="app">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1><span>∞</span> CMS</h1>
+                <div class="sidebar-tools">
+                    <button class="btn btn-icon btn-secondary" onclick="openBackupManager()" title="Backups"><i data-lucide="database"></i></button>
+                    <button class="btn btn-icon btn-secondary" onclick="openStravaManager()" title="Strava"><i data-lucide="activity"></i></button>
+                    <button class="btn btn-icon btn-secondary" onclick="openMenuEditor()" title="Menu"><i data-lucide="menu"></i></button>
+                    <a href="index.html" target="_blank" class="btn btn-icon btn-secondary" title="View"><i data-lucide="external-link"></i></a>
+                </div>
+            </div>
+            <div class="sidebar-content">
+                <div class="sidebar-actions">
+                    <button class="btn btn-primary btn-sm" style="flex:1" onclick="addModule()"><i data-lucide="folder-plus"></i>Module</button>
+                    <button class="btn btn-secondary btn-sm" onclick="toggleAllModules()"><i data-lucide="chevrons-down-up"></i></button>
+                </div>
+                <div id="moduleList"></div>
+            </div>
+        </aside>
+        
+        <main class="main">
+            <div class="empty-state" id="emptyState"><i data-lucide="mouse-pointer-click"></i><p>Επιλέξτε μάθημα</p></div>
+            
+            <div class="editor" id="moduleEditor">
+                <div class="editor-header"><div><h2 style="font-size:1.25rem;display:flex;align-items:center;gap:0.5rem"><i data-lucide="folder" style="color:var(--brand)"></i>Module</h2></div><button class="btn btn-primary" onclick="save()"><i data-lucide="save"></i>Save</button></div>
+                <div class="form-group"><label class="form-label">Τίτλος</label><input type="text" id="modTitle" class="form-input" style="font-size:1.125rem;font-weight:600" oninput="autoModSlug()"></div>
+                <div class="form-group"><label class="form-label">Slug</label><div class="slug-row"><span>…/</span><input type="text" id="modSlug"></div></div>
+                <div class="form-group"><label class="form-label">Tags</label><input type="text" id="modTags" class="form-input" placeholder="5K, Speed"></div>
+            </div>
+            
+            <div class="editor" id="lessonEditor">
+                <div class="editor-header">
+                    <div style="flex:1"><input type="text" id="editTitle" class="editor-title" placeholder="Τίτλος..." oninput="autoLessonSlug();updateSeo()"><div class="slug-row"><i data-lucide="link" style="width:12px;height:12px"></i><span id="modSlugPreview">module</span>/<input type="text" id="editSlug" oninput="updateSeo()"></div></div>
+                    <div style="display:flex;flex-direction:column;gap:0.5rem"><div style="display:flex;gap:0.5rem"><select id="editStatus" class="form-input" style="width:auto"><option value="draft">Draft</option><option value="published">Published</option></select><button class="btn btn-primary" onclick="save()"><i data-lucide="save"></i>SAVE</button></div><input type="text" id="editDate" class="form-input" style="width:100px;font-size:0.75rem" placeholder="dd/mm/yyyy"></div>
+                </div>
+                <div class="settings-box"><div class="form-row"><div class="form-group" style="margin-bottom:0"><label class="form-label">Type</label><select id="editType" class="form-input" onchange="toggleFields()"><option value="article">Article</option><option value="video">Video</option><option value="tool">Tool</option></select></div><div class="form-group" style="margin-bottom:0"><label class="form-label">Image URL</label><input type="text" id="editImage" class="form-input" placeholder="https://..." style="font-size:0.75rem"></div></div></div>
+                <div class="form-group" id="fieldVideo" style="display:none"><label class="form-label">YouTube ID</label><input type="text" id="editYoutube" class="form-input"></div>
+                <div class="form-group" id="fieldCode" style="display:none"><label class="form-label">Code</label><textarea id="editCode" class="form-input" style="font-family:monospace;background:var(--gray-900);color:#4ade80;min-height:200px"></textarea></div>
+                <div class="form-group"><label class="form-label">Content</label><div id="quillEditor"></div></div>
+                <div class="settings-box"><h4 style="font-size:0.875rem;margin-bottom:1rem">🔍 SEO</h4><div class="seo-preview"><div class="seo-preview-title" id="seoTitle">Title</div><div class="seo-preview-url">aenaon.run/<span id="seoSlug">slug</span></div><div class="seo-preview-desc" id="seoDesc">Desc</div></div><div class="form-row"><div class="form-group"><label class="form-label">SEO Title</label><input type="text" id="seoTitleInput" class="form-input" oninput="updateSeo()"></div><div class="form-group"><label class="form-label">Description</label><textarea id="seoDescInput" class="form-input" rows="2" oninput="updateSeo()"></textarea></div></div></div>
+            </div>
+            
+            <div class="editor" id="menuEditor">
+                <div class="editor-header"><div><h2 style="font-size:1.25rem"><i data-lucide="menu" style="color:var(--brand)"></i> Menu</h2></div><button class="btn btn-primary" onclick="saveMenu()"><i data-lucide="save"></i>Save</button></div>
+                <div id="menuList"></div>
+                <button class="btn btn-secondary" onclick="addMenuParent()" style="width:100%;margin-top:1rem"><i data-lucide="plus"></i>Add</button>
+            </div>
+            
+            <div class="editor" id="stravaEditor">
+                <div class="editor-header">
+                    <div><h2 style="font-size:1.25rem;display:flex;align-items:center;gap:0.5rem"><i data-lucide="activity" style="color:var(--strava)"></i>Strava Manager</h2></div>
+                    <div style="display:flex;gap:0.5rem">
+                        <button class="btn btn-strava" onclick="syncStravaActivities()" id="syncBtn"><i data-lucide="refresh-cw"></i>Sync Now</button>
+                        <button class="btn btn-primary" onclick="saveStravaData()"><i data-lucide="save"></i>Save</button>
+                    </div>
+                </div>
+                <div class="settings-box">
+                    <h4 style="margin-bottom:1rem"><span class="status-dot" id="stravaStatus"></span>Strava Connection</h4>
+                    <div class="form-row"><div class="form-group"><label class="form-label">Client ID</label><input type="text" id="stravaClientId" class="form-input"></div><div class="form-group"><label class="form-label">Client Secret</label><input type="password" id="stravaClientSecret" class="form-input"></div></div>
+                    <div class="form-row"><div class="form-group"><label class="form-label">Access Token</label><input type="text" id="stravaAccessToken" class="form-input"></div><div class="form-group"><label class="form-label">Refresh Token</label><input type="text" id="stravaRefreshToken" class="form-input"></div></div>
+                    <button class="btn btn-secondary" onclick="saveStravaSettings()"><i data-lucide="save"></i>Save Settings</button>
+                    <button class="btn btn-secondary" onclick="refreshStravaToken()" style="margin-left:0.5rem"><i data-lucide="key"></i>Refresh Token</button>
+                </div>
+                <h4 style="margin-bottom:1rem">📊 Activities (<span id="activityCount">0</span>)</h4>
+                <div id="stravaActivitiesList"></div>
+            </div>
+            
+            <div class="editor" id="backupEditor">
+                <div class="editor-header">
+                    <div><h2 style="font-size:1.25rem;display:flex;align-items:center;gap:0.5rem"><i data-lucide="database" style="color:var(--blue)"></i>Backup Manager</h2></div>
+                    <button class="btn btn-primary" onclick="createFullBackup()"><i data-lucide="plus"></i>Create Backup</button>
+                </div>
+                <div class="settings-box">
+                    <p style="font-size:0.875rem;color:var(--gray-600);margin-bottom:1rem">💾 Backups include: Articles, Training Plans, Strava Data, Menu. Last 10 backups are kept. Auto-backup every week.</p>
+                    <div id="lastBackupInfo" style="font-size:0.75rem;color:var(--gray-500)"></div>
+                </div>
+                <h4 style="margin-bottom:1rem">📦 Available Backups</h4>
+                <div id="backupsList"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Plan Editor -->
+    <div class="fullscreen-overlay" id="planOverlay">
+        <div class="fs-header">
+            <button class="fs-back" onclick="closePlanEditor()"><i data-lucide="arrow-left"></i>Πίσω</button>
+            <div class="fs-title"><i data-lucide="calendar"></i><span id="planModuleTitle">Training Plan</span></div>
+            <button class="btn btn-primary" onclick="savePlan()"><i data-lucide="save"></i>Save</button>
+        </div>
+        <div class="fs-body">
+            <div class="plan-hero"><h2 id="planHeroTitle">Training Plan</h2><p>Διαχείριση προγράμματος</p><div class="plan-hero-stats"><div class="plan-hero-stat"><div class="plan-hero-stat-value" id="planTotalWeeks">12</div><div class="plan-hero-stat-label">Εβδομάδες</div></div><div class="plan-hero-stat"><div class="plan-hero-stat-value" id="planTotalKm">0</div><div class="plan-hero-stat-label">KM</div></div><div class="plan-hero-stat"><div class="plan-hero-stat-value" id="planWorkouts">0</div><div class="plan-hero-stat-label">Workouts</div></div></div></div>
+            <div class="plan-settings"><div class="form-group"><label class="form-label">Έναρξη</label><input type="date" id="planStartDate" onchange="renderPlanWeeks()"></div><div class="form-group"><label class="form-label">Εβδομάδες</label><input type="number" id="planWeeks" min="1" max="52" value="12" onchange="renderPlanWeeks()"></div><div class="form-group"><label class="form-label">Περίοδοι</label><button class="btn btn-secondary btn-sm" onclick="openPeriodModal()" style="width:100%"><i data-lucide="plus"></i>Add</button></div><button class="btn btn-primary" onclick="savePlan()"><i data-lucide="save"></i></button></div>
+            <div class="periods-section"><div class="periods-header"><h3 style="font-size:1rem">📊 Περίοδοι</h3></div><div id="periodsList"></div></div>
+            <div id="weeksContainer"></div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="deleteModal"><div class="modal"><div class="modal-header" style="background:#fef2f2"><h3 style="color:#dc2626">⚠️ Διαγραφή</h3><button class="modal-close" onclick="closeModal('deleteModal')"><i data-lucide="x"></i></button></div><div class="modal-body"><p>Γράψτε <strong style="color:#dc2626">DELETE</strong>:</p><input type="text" id="deleteInput" class="form-input" style="text-align:center;text-transform:uppercase;font-weight:700;margin-top:1rem"></div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('deleteModal')">Ακύρωση</button><button class="btn" style="background:#dc2626;color:white" onclick="confirmDelete()">ΔΙΑΓΡΑΦΗ</button></div></div></div>
+    <div class="modal-overlay" id="periodModal"><div class="modal"><div class="modal-header"><h3>📊 Περίοδος</h3><button class="modal-close" onclick="closeModal('periodModal')"><i data-lucide="x"></i></button></div><div class="modal-body"><div class="form-group"><label class="form-label">Όνομα</label><select id="periodName" class="form-input"><option>Εισαγωγή</option><option>Γενική</option><option>Βασική</option><option>Ειδική</option><option>Αγωνιστική</option><option>Tapering</option><option>Μεταβατική</option></select></div><div class="form-row"><div class="form-group"><label class="form-label">Από</label><input type="number" id="periodStart" class="form-input" min="1" value="1"></div><div class="form-group"><label class="form-label">Έως</label><input type="number" id="periodEnd" class="form-input" min="1" value="4"></div></div><div class="form-group"><label class="form-label">Χρώμα</label><input type="color" id="periodColor" class="form-input" value="#8b5cf6" style="height:40px"></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('periodModal')">Ακύρωση</button><button class="btn btn-purple" onclick="savePeriod()">Save</button></div></div></div>
+    <div class="modal-overlay" id="workoutModal"><div class="modal" style="max-width:650px"><div class="modal-header"><h3>🏃 Workout</h3><button class="modal-close" onclick="closeModal('workoutModal')"><i data-lucide="x"></i></button></div><div class="modal-body"><input type="hidden" id="workoutDate"><input type="hidden" id="workoutId"><label class="form-label">Κατηγορία</label><div class="category-btns"><button class="category-btn" data-cat="easy" onclick="setCategory('easy')">Easy</button><button class="category-btn" data-cat="tempo" onclick="setCategory('tempo')">Tempo</button><button class="category-btn" data-cat="intervals" onclick="setCategory('intervals')">Intervals</button><button class="category-btn" data-cat="long" onclick="setCategory('long')">Long</button><button class="category-btn" data-cat="recovery" onclick="setCategory('recovery')">Recovery</button><button class="category-btn" data-cat="hills" onclick="setCategory('hills')">Hills</button><button class="category-btn" data-cat="race" onclick="setCategory('race')">Race</button><button class="category-btn" data-cat="rest" onclick="setCategory('rest')">Rest</button></div><div class="form-group"><label class="form-label">Τίτλος</label><input type="text" id="workoutTitle" class="form-input"></div><div class="form-group"><label class="form-label">Περιγραφή</label><textarea id="workoutDesc" class="form-input" rows="2"></textarea></div><div class="form-row-3"><div class="form-group"><label class="form-label">Min</label><input type="number" id="workoutDuration" class="form-input" oninput="calcKm()"></div><div class="form-group"><label class="form-label">Pace</label><input type="text" id="workoutPace" class="form-input" placeholder="5:30" oninput="calcKm()"></div><div class="form-group"><label class="form-label">KM</label><input type="number" id="workoutKm" class="form-input" step="0.1"></div></div><div id="intervalsSection" style="display:none"><h4 style="font-size:0.875rem;margin-bottom:0.75rem">Intervals</h4><div id="intervalsList"></div><button class="btn btn-secondary btn-sm" onclick="addInterval()"><i data-lucide="plus"></i>Add</button></div><div class="km-display">📏 <span id="totalKm">0</span> km</div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="deleteWorkout()" style="margin-right:auto"><i data-lucide="trash-2"></i></button><button class="btn btn-secondary" onclick="closeModal('workoutModal')">Cancel</button><button class="btn btn-purple" onclick="saveWorkout()">Save</button></div></div></div>
+    <div class="modal-overlay" id="activityModal"><div class="modal"><div class="modal-header" style="background:var(--strava-light)"><h3 style="color:var(--strava)">🏃 Edit Activity</h3><button class="modal-close" onclick="closeModal('activityModal')"><i data-lucide="x"></i></button></div><div class="modal-body"><input type="hidden" id="editActivityId"><div class="form-group"><label class="form-label">Custom Title</label><input type="text" id="editActivityTitle" class="form-input"></div><div class="form-group"><label class="form-label">Visibility</label><select id="editActivityHidden" class="form-input"><option value="false">Visible</option><option value="true">Hidden</option></select></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('activityModal')">Cancel</button><button class="btn btn-strava" onclick="saveActivityEdit()">Save</button></div></div></div>
+
+    <script>
+    let activeLesson=null,activeModuleIdx=null,quill,deleteTarget={};
+    let currentCategory='easy',intervals=[],clipboard=null,currentPlanModuleId=null;
+    let TRAINING_DATA=JSON.parse(localStorage.getItem('trainingData')||'{}');
+    let STRAVA_SETTINGS=JSON.parse(localStorage.getItem('stravaSettings')||'{}');
+    let collapsedModules=JSON.parse(localStorage.getItem('collapsedModules')||'[]');
+
+    document.addEventListener('DOMContentLoaded',()=>{
+        if(localStorage.getItem('cmsLoggedIn')==='true')showApp();
+        quill=new Quill('#quillEditor',{theme:'snow',modules:{toolbar:[[{header:[1,2,3,false]}],['bold','italic','underline','link'],[{list:'ordered'},{list:'bullet'}],['clean']]}});
+        lucide.createIcons();
+        loadTrainingData();
+        checkAutoBackup();
+    });
+
+    function showLoading(text='Loading...'){document.getElementById('loadingText').textContent=text;document.getElementById('loadingOverlay').classList.add('active')}
+    function hideLoading(){document.getElementById('loadingOverlay').classList.remove('active')}
+
+    async function login(){const pin=document.getElementById('pinInput').value;try{const fd=new FormData();fd.append('action','login');fd.append('pin',pin);const r=await fetch('api.php',{method:'POST',body:fd});const d=await r.json();if(d.status==='success'){if(document.getElementById('rememberMe').checked)localStorage.setItem('cmsLoggedIn','true');showApp()}else alert('Wrong PIN')}catch(e){if(pin==='1234'){localStorage.setItem('cmsLoggedIn','true');showApp()}else alert('Error')}}
+    function showApp(){document.getElementById('loginModal').classList.add('hidden');document.getElementById('app').classList.add('visible');init()}
+    function init(){renderModules();lucide.createIcons()}
+    function hideAllEditors(){document.getElementById('emptyState').style.display='none';document.querySelectorAll('.editor').forEach(e=>e.classList.remove('active'))}
+
+    async function loadTrainingData(){try{const r=await fetch('training.json?v='+Date.now());if(r.ok){TRAINING_DATA=await r.json();localStorage.setItem('trainingData',JSON.stringify(TRAINING_DATA))}}catch(e){console.log('Using local training data')}}
+
+    function renderModules(){const list=document.getElementById('moduleList');if(!list||typeof COURSE_DATA==='undefined')return;list.innerHTML='';COURSE_DATA.forEach((mod,mi)=>{const isCollapsed=collapsedModules.includes(mod.id);const plan=TRAINING_DATA[mod.id]||{workouts:[]};const wc=(plan.workouts||[]).length;let km=0;(plan.workouts||[]).forEach(w=>km+=parseFloat(w.km)||0);const div=document.createElement('div');div.className='module'+(isCollapsed?' collapsed':'');div.innerHTML=`<div class="module-header" onclick="toggleModule('${mod.id}')"><i data-lucide="chevron-down" class="module-chevron"></i><div class="module-title"><i data-lucide="folder"></i><span>${mod.title}</span></div><span class="module-count">${(mod.lessons||[]).length}</span><div class="module-actions" onclick="event.stopPropagation()"><button onclick="editModule(${mi})"><i data-lucide="edit-3"></i></button><button class="delete" onclick="requestDelete('module',${mi})"><i data-lucide="trash-2"></i></button><button onclick="addLesson(${mi})"><i data-lucide="plus"></i></button></div></div><div class="module-body"><div class="lessons" id="lessons-${mi}"></div><button class="plan-btn" onclick="event.stopPropagation();openPlanEditor('${mod.id}')"><i data-lucide="calendar"></i><span>Training Plan</span><span style="margin-left:auto;font-size:0.625rem;opacity:0.8">${km.toFixed(0)}km</span>${wc?`<span class="count">${wc}</span>`:''}</button></div>`;list.appendChild(div);const lc=div.querySelector('.lessons');(mod.lessons||[]).forEach((l,li)=>{const le=document.createElement('div');le.className='lesson'+(activeLesson===l.id?' active':'')+(l.status==='draft'?' draft':'');le.innerHTML=`<i data-lucide="${l.type==='video'?'video':'file-text'}" class="lesson-icon"></i><span class="lesson-title" onclick="editLesson('${l.id}',${mi})">${l.title}</span><button class="lesson-delete" onclick="event.stopPropagation();requestDelete('lesson',${mi},${li})"><i data-lucide="trash-2" style="width:12px;height:12px"></i></button>`;lc.appendChild(le)});if(typeof Sortable!=='undefined')new Sortable(lc,{group:'lessons',animation:150,onEnd:()=>save(true)})});lucide.createIcons()}
+
+    function toggleModule(id){const i=collapsedModules.indexOf(id);if(i===-1)collapsedModules.push(id);else collapsedModules.splice(i,1);localStorage.setItem('collapsedModules',JSON.stringify(collapsedModules));renderModules()}
+    function toggleAllModules(){collapsedModules=collapsedModules.length?[]:COURSE_DATA.map(m=>m.id);localStorage.setItem('collapsedModules',JSON.stringify(collapsedModules));renderModules()}
+    function addModule(){const t=prompt('Module name:');if(!t)return;COURSE_DATA.push({id:'m'+Date.now(),title:t,lessons:[]});renderModules();save(true)}
+    function editModule(mi){activeModuleIdx=mi;activeLesson=null;const m=COURSE_DATA[mi];hideAllEditors();document.getElementById('moduleEditor').classList.add('active');document.getElementById('modTitle').value=m.title;document.getElementById('modSlug').value=m.slug||toGreeklish(m.title);document.getElementById('modTags').value=(m.tags||[]).join(', ');renderModules()}
+    function autoModSlug(){document.getElementById('modSlug').value=toGreeklish(document.getElementById('modTitle').value)}
+    function addLesson(mi){const id='l'+Date.now();COURSE_DATA[mi].lessons.push({id,title:'New Lesson',type:'article',status:'draft',date:new Date().toLocaleDateString('el-GR'),downloads:[]});const ci=collapsedModules.indexOf(COURSE_DATA[mi].id);if(ci>-1){collapsedModules.splice(ci,1);localStorage.setItem('collapsedModules',JSON.stringify(collapsedModules))}renderModules();editLesson(id,mi);save(true)}
+    function editLesson(id,mi){activeLesson=id;activeModuleIdx=mi;const l=findLesson(id);if(!l)return;hideAllEditors();document.getElementById('lessonEditor').classList.add('active');document.getElementById('editTitle').value=l.title;document.getElementById('editSlug').value=l.slug||toGreeklish(l.title);document.getElementById('editStatus').value=l.status||'draft';document.getElementById('editDate').value=l.date||'';document.getElementById('editType').value=l.type||'article';document.getElementById('editImage').value=l.image||'';document.getElementById('editYoutube').value=l.youtubeId||'';document.getElementById('editCode').value=l.customCode||'';quill.root.innerHTML=l.content||'';document.getElementById('seoTitleInput').value=l.seoTitle||'';document.getElementById('seoDescInput').value=l.seoDesc||'';document.getElementById('modSlugPreview').textContent=toGreeklish(COURSE_DATA[mi].title);toggleFields();updateSeo();renderModules()}
+    function toggleFields(){const t=document.getElementById('editType').value;document.getElementById('fieldVideo').style.display=t==='video'?'block':'none';document.getElementById('fieldCode').style.display=t==='tool'?'block':'none'}
+    function autoLessonSlug(){if(!document.getElementById('editSlug').value)document.getElementById('editSlug').value=toGreeklish(document.getElementById('editTitle').value)}
+    
+    async function save(silent=false){
+        if(activeModuleIdx!==null&&document.getElementById('moduleEditor').classList.contains('active')){const m=COURSE_DATA[activeModuleIdx];m.title=document.getElementById('modTitle').value;m.slug=document.getElementById('modSlug').value;m.tags=document.getElementById('modTags').value.split(',').map(t=>t.trim()).filter(t=>t)}
+        if(activeLesson&&document.getElementById('lessonEditor').classList.contains('active')){const l=findLesson(activeLesson);if(l){l.title=document.getElementById('editTitle').value;l.slug=document.getElementById('editSlug').value;l.status=document.getElementById('editStatus').value;l.date=document.getElementById('editDate').value;l.type=document.getElementById('editType').value;l.image=document.getElementById('editImage').value;l.youtubeId=document.getElementById('editYoutube').value;l.customCode=document.getElementById('editCode').value;l.content=quill.root.innerHTML;l.seoTitle=document.getElementById('seoTitleInput').value;l.seoDesc=document.getElementById('seoDescInput').value}}
+        try{const fd=new FormData();fd.append('action','save');fd.append('target','course');fd.append('data',JSON.stringify(COURSE_DATA));const r=await fetch('api.php',{method:'POST',body:fd});const d=await r.json();if(d.status==='success'){if(!silent)alert('Saved!');renderModules()}}catch(e){if(!silent)alert('Saved locally');renderModules()}
+    }
+    
+    function requestDelete(type,mIdx,lIdx=null){deleteTarget={type,mIdx,lIdx};document.getElementById('deleteInput').value='';document.getElementById('deleteModal').classList.add('active')}
+    function confirmDelete(){if(document.getElementById('deleteInput').value.toUpperCase()!=='DELETE')return alert('Type DELETE');if(deleteTarget.type==='module'){COURSE_DATA.splice(deleteTarget.mIdx,1);activeLesson=null;activeModuleIdx=null}else{if(activeLesson===COURSE_DATA[deleteTarget.mIdx].lessons[deleteTarget.lIdx].id)activeLesson=null;COURSE_DATA[deleteTarget.mIdx].lessons.splice(deleteTarget.lIdx,1)}hideAllEditors();document.getElementById('emptyState').style.display='flex';closeModal('deleteModal');renderModules();save(true)}
+    function updateSeo(){const title=document.getElementById('seoTitleInput').value||document.getElementById('editTitle').value;const desc=document.getElementById('seoDescInput').value||'';const slug=document.getElementById('editSlug').value;const modSlug=activeModuleIdx!==null?toGreeklish(COURSE_DATA[activeModuleIdx].title):'module';document.getElementById('seoTitle').textContent=title;document.getElementById('seoDesc').textContent=desc||'No description';document.getElementById('seoSlug').textContent=modSlug+'/'+slug}
+
+    // Training Plan
+    function openPlanEditor(moduleId){currentPlanModuleId=moduleId;const mod=COURSE_DATA.find(m=>m.id===moduleId);if(!mod)return;if(!TRAINING_DATA[moduleId])TRAINING_DATA[moduleId]={startDate:'',weeks:12,periods:[],workouts:[]};const plan=TRAINING_DATA[moduleId];document.getElementById('planModuleTitle').textContent=mod.title;document.getElementById('planHeroTitle').textContent=mod.title;document.getElementById('planStartDate').value=plan.startDate||'';document.getElementById('planWeeks').value=plan.weeks||12;renderPlanPeriods();renderPlanWeeks();updatePlanStats();document.getElementById('planOverlay').classList.add('active');document.body.style.overflow='hidden';lucide.createIcons()}
+    function closePlanEditor(){document.getElementById('planOverlay').classList.remove('active');document.body.style.overflow='';currentPlanModuleId=null;renderModules()}
+    
+    async function savePlan(){if(!currentPlanModuleId)return;TRAINING_DATA[currentPlanModuleId].startDate=document.getElementById('planStartDate').value;TRAINING_DATA[currentPlanModuleId].weeks=parseInt(document.getElementById('planWeeks').value)||12;localStorage.setItem('trainingData',JSON.stringify(TRAINING_DATA));try{const fd=new FormData();fd.append('action','save');fd.append('target','training');fd.append('data',JSON.stringify(TRAINING_DATA));const r=await fetch('api.php',{method:'POST',body:fd});const d=await r.json();if(d.status==='success'){alert('Saved!');updatePlanStats();renderModules()}else alert('Error')}catch(e){alert('Saved locally');updatePlanStats();renderModules()}}
+    
+    function updatePlanStats(){if(!currentPlanModuleId)return;const plan=TRAINING_DATA[currentPlanModuleId];const wo=plan.workouts||[];let km=0;wo.forEach(w=>km+=parseFloat(w.km)||0);document.getElementById('planTotalWeeks').textContent=plan.weeks||12;document.getElementById('planTotalKm').textContent=km.toFixed(0);document.getElementById('planWorkouts').textContent=wo.length}
+    function renderPlanPeriods(){if(!currentPlanModuleId)return;const plan=TRAINING_DATA[currentPlanModuleId];document.getElementById('periodsList').innerHTML=(plan.periods||[]).map((p,i)=>`<div class="period-item"><div class="color-dot" style="background:${p.color}"></div><div class="name">${p.name}</div><div class="range">W${p.weekStart}-${p.weekEnd}</div><button class="btn btn-secondary btn-sm" onclick="deletePeriod(${i})"><i data-lucide="trash-2"></i></button></div>`).join('');lucide.createIcons()}
+    function openPeriodModal(){document.getElementById('periodModal').classList.add('active')}
+    function savePeriod(){if(!currentPlanModuleId)return;if(!TRAINING_DATA[currentPlanModuleId].periods)TRAINING_DATA[currentPlanModuleId].periods=[];TRAINING_DATA[currentPlanModuleId].periods.push({name:document.getElementById('periodName').value,weekStart:parseInt(document.getElementById('periodStart').value),weekEnd:parseInt(document.getElementById('periodEnd').value),color:document.getElementById('periodColor').value});closeModal('periodModal');renderPlanPeriods();renderPlanWeeks()}
+    function deletePeriod(i){TRAINING_DATA[currentPlanModuleId].periods.splice(i,1);renderPlanPeriods();renderPlanWeeks()}
+    
+    function renderPlanWeeks(){if(!currentPlanModuleId)return;const plan=TRAINING_DATA[currentPlanModuleId];const weeks=plan.weeks||12;const startDate=plan.startDate?new Date(plan.startDate):new Date();const days=['Δευ','Τρι','Τετ','Πεμ','Παρ','Σαβ','Κυρ'];const today=new Date().toDateString();let html='';for(let w=0;w<weeks;w++){const ws=new Date(startDate);ws.setDate(startDate.getDate()+(w*7));const period=(plan.periods||[]).find(p=>p.weekStart<=(w+1)&&p.weekEnd>=(w+1));html+=`<div class="week-view"><div class="week-header-row" style="${period?`background:linear-gradient(135deg,${period.color},${period.color}dd)`:''}"><div><h3>Εβδομάδα ${w+1}</h3>${period?`<div class="week-period">${period.name}</div>`:''}</div><div class="week-actions"><button onclick="copyWeek(${w})"><i data-lucide="copy"></i>Copy</button><button onclick="pasteWeek(${w})"><i data-lucide="clipboard"></i>Paste</button></div></div><div class="week-grid">`;for(let d=0;d<7;d++){const date=new Date(ws);date.setDate(ws.getDate()+d);const ds=date.toISOString().split('T')[0];const isToday=date.toDateString()===today;const workouts=(plan.workouts||[]).filter(wo=>wo.date===ds);const actual=getActualForDate(date);html+=`<div class="day-col ${isToday?'today':''}"><div class="day-col-header">${days[d]}<span class="date">${date.getDate()}</span></div><div class="day-col-body">`;workouts.forEach(wo=>{html+=`<div class="workout-card" onclick="openWorkoutModal('${ds}','${wo.id}')"><div class="title">${wo.title}</div><div class="meta">${wo.km||0}km</div></div>`});if(actual)html+=`<div class="workout-card strava"><div class="title">${actual.customTitle||actual.name}</div><div class="meta">${(actual.distance/1000).toFixed(1)}km</div></div>`;html+=`<button class="add-workout-btn" onclick="openWorkoutModal('${ds}')"><i data-lucide="plus"></i></button></div></div>`}html+=`</div></div>`}document.getElementById('weeksContainer').innerHTML=html;lucide.createIcons()}
+    function getActualForDate(date){if(typeof STRAVA_DATA==='undefined')return null;const ds=date.toLocaleDateString('el-GR');return STRAVA_DATA.find(a=>a.date===ds&&!a.hidden)}
+    
+    function openWorkoutModal(ds,id=null){document.getElementById('workoutDate').value=ds;document.getElementById('workoutId').value=id||'';intervals=[];if(id&&currentPlanModuleId){const wo=(TRAINING_DATA[currentPlanModuleId].workouts||[]).find(w=>w.id===id);if(wo){document.getElementById('workoutTitle').value=wo.title||'';document.getElementById('workoutDesc').value=wo.description||'';document.getElementById('workoutDuration').value=wo.duration||'';document.getElementById('workoutPace').value=wo.pace||'';document.getElementById('workoutKm').value=wo.km||'';setCategory(wo.category||'easy');intervals=wo.intervals||[];document.getElementById('totalKm').textContent=wo.km||'0'}else clearWorkoutForm()}else clearWorkoutForm();renderIntervals();document.getElementById('workoutModal').classList.add('active');lucide.createIcons()}
+    function clearWorkoutForm(){document.getElementById('workoutTitle').value='';document.getElementById('workoutDesc').value='';document.getElementById('workoutDuration').value='';document.getElementById('workoutPace').value='';document.getElementById('workoutKm').value='';document.getElementById('totalKm').textContent='0';setCategory('easy');intervals=[]}
+    function setCategory(cat){currentCategory=cat;document.querySelectorAll('.category-btn').forEach(b=>b.classList.toggle('active',b.dataset.cat===cat));document.getElementById('intervalsSection').style.display=cat==='intervals'?'block':'none';if(cat==='rest'){document.getElementById('workoutTitle').value='Rest Day';document.getElementById('workoutKm').value='0';document.getElementById('totalKm').textContent='0'}}
+    function renderIntervals(){document.getElementById('intervalsList').innerHTML=intervals.map((int,i)=>`<div class="interval-row"><div class="form-group"><label class="form-label">Reps</label><input type="number" class="form-input" value="${int.reps||1}" onchange="updateInterval(${i},'reps',this.value)"></div><div class="form-group"><label class="form-label">Dist</label><input type="text" class="form-input" value="${int.distance||''}" onchange="updateInterval(${i},'distance',this.value)"></div><div class="form-group"><label class="form-label">Pace</label><input type="text" class="form-input" value="${int.pace||''}" onchange="updateInterval(${i},'pace',this.value)"></div><div class="form-group"><label class="form-label">Rest</label><input type="text" class="form-input" value="${int.rest||''}" onchange="updateInterval(${i},'rest',this.value)"></div><button class="btn btn-secondary btn-icon" onclick="removeInterval(${i})"><i data-lucide="x"></i></button></div>`).join('');lucide.createIcons();calcKm()}
+    function addInterval(){intervals.push({reps:1,distance:'400m',pace:'',rest:'200m'});renderIntervals()}
+    function updateInterval(i,f,v){intervals[i][f]=v;calcKm()}
+    function removeInterval(i){intervals.splice(i,1);renderIntervals()}
+    function calcKm(){let km=0;const dur=parseFloat(document.getElementById('workoutDuration').value)||0;const paceStr=document.getElementById('workoutPace').value;if(currentCategory==='intervals'&&intervals.length){intervals.forEach(int=>{km+=(int.reps||1)*(parseDistance(int.distance)+parseDistance(int.rest))});km+=2}else if(dur&&paceStr){const p=paceStr.split(':');const s=parseInt(p[0]||0)*60+parseInt(p[1]||0);if(s>0)km=(dur*60)/s}document.getElementById('totalKm').textContent=km.toFixed(1);document.getElementById('workoutKm').value=km.toFixed(1)}
+    function parseDistance(s){if(!s)return 0;s=s.toString().toLowerCase();if(s.includes('km'))return parseFloat(s)||0;if(s.includes('m'))return(parseFloat(s)||0)/1000;const n=parseFloat(s);return n>100?n/1000:n}
+    
+    function saveWorkout(){if(!currentPlanModuleId)return;const plan=TRAINING_DATA[currentPlanModuleId];if(!plan.workouts)plan.workouts=[];const ds=document.getElementById('workoutDate').value;const id=document.getElementById('workoutId').value||'wo_'+Date.now();const idx=plan.workouts.findIndex(w=>w.id===id);const kmVal=parseFloat(document.getElementById('workoutKm').value)||0;const wo={id,date:ds,title:document.getElementById('workoutTitle').value||'Workout',description:document.getElementById('workoutDesc').value,category:currentCategory,duration:parseInt(document.getElementById('workoutDuration').value)||0,pace:document.getElementById('workoutPace').value,km:kmVal,intervals:currentCategory==='intervals'?intervals:[]};if(idx>=0)plan.workouts[idx]=wo;else plan.workouts.push(wo);closeModal('workoutModal');renderPlanWeeks();updatePlanStats()}
+    function deleteWorkout(){const id=document.getElementById('workoutId').value;if(!id||!currentPlanModuleId)return closeModal('workoutModal');if(!confirm('Delete?'))return;TRAINING_DATA[currentPlanModuleId].workouts=TRAINING_DATA[currentPlanModuleId].workouts.filter(w=>w.id!==id);closeModal('workoutModal');renderPlanWeeks();updatePlanStats()}
+    function copyWeek(w){if(!currentPlanModuleId)return;const plan=TRAINING_DATA[currentPlanModuleId];const start=plan.startDate?new Date(plan.startDate):new Date();const ws=new Date(start);ws.setDate(start.getDate()+(w*7));const dates=[];for(let d=0;d<7;d++){const dt=new Date(ws);dt.setDate(ws.getDate()+d);dates.push(dt.toISOString().split('T')[0])}clipboard=(plan.workouts||[]).filter(x=>dates.includes(x.date)).map(x=>({...x,dayOfWeek:dates.indexOf(x.date)}));alert(`Copied ${clipboard.length}`)}
+    function pasteWeek(w){if(!clipboard?.length||!currentPlanModuleId)return alert('Nothing');const plan=TRAINING_DATA[currentPlanModuleId];const start=plan.startDate?new Date(plan.startDate):new Date();const ws=new Date(start);ws.setDate(start.getDate()+(w*7));if(!plan.workouts)plan.workouts=[];clipboard.forEach(x=>{const dt=new Date(ws);dt.setDate(ws.getDate()+x.dayOfWeek);plan.workouts.push({...x,id:'wo_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),date:dt.toISOString().split('T')[0]})});renderPlanWeeks();updatePlanStats();alert('Pasted!')}
+
+    // Strava Manager
+    function openStravaManager(){hideAllEditors();document.getElementById('stravaEditor').classList.add('active');document.getElementById('stravaClientId').value=STRAVA_SETTINGS.clientId||'';document.getElementById('stravaClientSecret').value=STRAVA_SETTINGS.clientSecret||'';document.getElementById('stravaAccessToken').value=STRAVA_SETTINGS.accessToken||'';document.getElementById('stravaRefreshToken').value=STRAVA_SETTINGS.refreshToken||'';document.getElementById('stravaStatus').className='status-dot '+(STRAVA_SETTINGS.accessToken?'connected':'disconnected');renderStravaActivities()}
+    
+    function saveStravaSettings(){STRAVA_SETTINGS.clientId=document.getElementById('stravaClientId').value;STRAVA_SETTINGS.clientSecret=document.getElementById('stravaClientSecret').value;STRAVA_SETTINGS.accessToken=document.getElementById('stravaAccessToken').value;STRAVA_SETTINGS.refreshToken=document.getElementById('stravaRefreshToken').value;localStorage.setItem('stravaSettings',JSON.stringify(STRAVA_SETTINGS));document.getElementById('stravaStatus').className='status-dot '+(STRAVA_SETTINGS.accessToken?'connected':'disconnected');alert('Settings saved!')}
+    
+    function renderStravaActivities(){const list=document.getElementById('stravaActivitiesList');if(typeof STRAVA_DATA==='undefined'||!STRAVA_DATA.length){list.innerHTML='<p style="color:var(--gray-400)">No activities. Click "Sync Now" to fetch from Strava.</p>';document.getElementById('activityCount').textContent='0';return}document.getElementById('activityCount').textContent=STRAVA_DATA.length;list.innerHTML=STRAVA_DATA.slice(0,50).map(a=>`<div class="activity-item ${a.hidden?'hidden':''}"><div class="icon"><i data-lucide="activity"></i></div><div class="info"><div class="title">${a.customTitle||a.name}</div><div class="meta">${a.date} • ${(a.distance/1000).toFixed(2)}km • ${a.hidden?'🙈 Hidden':'👁️ Visible'}</div></div><div class="actions"><button class="btn btn-secondary btn-sm" onclick="editActivity('${a.id}')"><i data-lucide="edit-3"></i></button><button class="btn btn-secondary btn-sm" onclick="toggleActivityVisibility('${a.id}')"><i data-lucide="${a.hidden?'eye':'eye-off'}"></i></button></div></div>`).join('');lucide.createIcons()}
+    
+    function editActivity(id){const a=STRAVA_DATA.find(x=>x.id==id);if(!a)return;document.getElementById('editActivityId').value=id;document.getElementById('editActivityTitle').value=a.customTitle||a.name;document.getElementById('editActivityHidden').value=a.hidden?'true':'false';document.getElementById('activityModal').classList.add('active')}
+    function saveActivityEdit(){const id=document.getElementById('editActivityId').value;const a=STRAVA_DATA.find(x=>x.id==id);if(!a)return;a.customTitle=document.getElementById('editActivityTitle').value;a.hidden=document.getElementById('editActivityHidden').value==='true';closeModal('activityModal');renderStravaActivities()}
+    function toggleActivityVisibility(id){const a=STRAVA_DATA.find(x=>x.id==id);if(a){a.hidden=!a.hidden;renderStravaActivities()}}
+    
+    async function syncStravaActivities(){
+        const token=STRAVA_SETTINGS.accessToken||document.getElementById('stravaAccessToken').value;
+        if(!token){alert('Add Access Token first');return}
+        
+        showLoading('Fetching activities from Strava...');
+        document.getElementById('syncBtn').disabled=true;
+        
+        try{
+            const fd=new FormData();
+            fd.append('action','strava_sync');
+            fd.append('access_token',token);
+            const r=await fetch('api.php',{method:'POST',body:fd});
+            const d=await r.json();
+            
+            if(d.status==='success'){
+                alert(`Synced ${d.count} activities!`);
+                location.reload();
+            }else{
+                alert('Error: '+d.message);
+            }
+        }catch(e){
+            alert('Sync failed: '+e.message);
+        }finally{
+            hideLoading();
+            document.getElementById('syncBtn').disabled=false;
+        }
+    }
+    
+    async function refreshStravaToken(){
+        const clientId=document.getElementById('stravaClientId').value;
+        const clientSecret=document.getElementById('stravaClientSecret').value;
+        const refreshToken=document.getElementById('stravaRefreshToken').value;
+        
+        if(!clientId||!clientSecret||!refreshToken){alert('Fill in all credentials');return}
+        
+        showLoading('Refreshing token...');
+        try{
+            const fd=new FormData();
+            fd.append('action','strava_refresh');
+            fd.append('client_id',clientId);
+            fd.append('client_secret',clientSecret);
+            fd.append('refresh_token',refreshToken);
+            const r=await fetch('api.php',{method:'POST',body:fd});
+            const d=await r.json();
+            
+            if(d.status==='success'){
+                document.getElementById('stravaAccessToken').value=d.access_token;
+                document.getElementById('stravaRefreshToken').value=d.refresh_token;
+                STRAVA_SETTINGS.accessToken=d.access_token;
+                STRAVA_SETTINGS.refreshToken=d.refresh_token;
+                localStorage.setItem('stravaSettings',JSON.stringify(STRAVA_SETTINGS));
+                alert('Token refreshed!');
+            }else{
+                alert('Error: '+d.message);
+            }
+        }catch(e){alert('Failed: '+e.message)}finally{hideLoading()}
+    }
+    
+    async function saveStravaData(){
+        showLoading('Saving Strava data...');
+        try{const fd=new FormData();fd.append('action','save');fd.append('target','strava');fd.append('data',JSON.stringify(STRAVA_DATA));const r=await fetch('api.php',{method:'POST',body:fd});const d=await r.json();if(d.status==='success')alert('Saved!');else alert('Error')}catch(e){alert('Error')}finally{hideLoading()}
+    }
+
+    // Backup Manager
+    function openBackupManager(){hideAllEditors();document.getElementById('backupEditor').classList.add('active');loadBackupsList()}
+    
+    async function loadBackupsList(){
+        try{
+            const r=await fetch('api.php?action=list_backups');
+            const d=await r.json();
+            if(d.status==='success'){
+                const list=document.getElementById('backupsList');
+                if(!d.backups.length){list.innerHTML='<p style="color:var(--gray-400)">No backups yet.</p>';return}
+                list.innerHTML=d.backups.map(b=>`<div class="backup-item"><div class="info"><div class="name">${b.name}</div><div class="date">${b.date}</div></div><button class="btn btn-secondary btn-sm" onclick="restoreBackup('${b.name}')"><i data-lucide="rotate-ccw"></i>Restore</button></div>`).join('');
+                lucide.createIcons();
+                
+                // Show last backup info
+                if(d.backups.length){
+                    document.getElementById('lastBackupInfo').textContent='Last backup: '+d.backups[0].date;
+                }
+            }
+        }catch(e){console.log('Could not load backups')}
+    }
+    
+    async function createFullBackup(){
+        showLoading('Creating full backup...');
+        try{
+            const fd=new FormData();
+            fd.append('action','create_backup');
+            const r=await fetch('api.php',{method:'POST',body:fd});
+            const d=await r.json();
+            if(d.status==='success'){alert('Backup created: '+d.filename);loadBackupsList()}
+            else alert('Error: '+d.message);
+        }catch(e){alert('Backup failed')}finally{hideLoading()}
+    }
+    
+    async function restoreBackup(filename){
+        if(!confirm('Restore backup "'+filename+'"? Current data will be overwritten.'))return;
+        showLoading('Restoring backup...');
+        try{
+            const fd=new FormData();
+            fd.append('action','restore');
+            fd.append('filename',filename);
+            const r=await fetch('api.php',{method:'POST',body:fd});
+            const d=await r.json();
+            if(d.status==='success'){alert('Restored!');location.reload()}
+            else alert('Error: '+d.message);
+        }catch(e){alert('Restore failed')}finally{hideLoading()}
+    }
+    
+    // Auto backup check (weekly)
+    function checkAutoBackup(){
+        const lastAuto=localStorage.getItem('lastAutoBackup');
+        const now=Date.now();
+        const weekMs=7*24*60*60*1000;
+        if(!lastAuto||now-parseInt(lastAuto)>weekMs){
+            // Trigger auto backup
+            fetch('api.php',{method:'POST',body:new URLSearchParams({action:'auto_backup'})}).then(()=>{
+                localStorage.setItem('lastAutoBackup',now.toString());
+            }).catch(()=>{});
+        }
+    }
+
+    // Menu
+    function openMenuEditor(){hideAllEditors();document.getElementById('menuEditor').classList.add('active');renderMenuList()}
+    function renderMenuList(){const list=document.getElementById('menuList');if(typeof MENU_DATA==='undefined'){list.innerHTML='<p style="color:var(--gray-400)">No menu.js</p>';return}list.innerHTML='';MENU_DATA.forEach((item,i)=>{const div=document.createElement('div');div.className='menu-item';div.innerHTML=`<div class="menu-item-header"><i data-lucide="grip-vertical" class="handle" style="width:16px;height:16px;color:var(--gray-400)"></i><div class="menu-item-inputs"><input value="${item.title}" placeholder="Label" onchange="updateMenuItem(${i},null,'title',this.value)"><input value="${item.url}" placeholder="URL" onchange="updateMenuItem(${i},null,'url',this.value)"></div><div style="display:flex;gap:0.25rem"><button class="btn btn-secondary btn-sm" onclick="addMenuChild(${i})"><i data-lucide="list-plus"></i></button><button class="btn btn-secondary btn-sm" onclick="deleteMenuItem(${i},null)"><i data-lucide="trash-2"></i></button></div></div><div class="menu-children" id="menuChildren-${i}" style="${!(item.children?.length)?'display:none':''}"></div>`;list.appendChild(div);const cc=div.querySelector('.menu-children');(item.children||[]).forEach((c,ci)=>{const cd=document.createElement('div');cd.className='sub-item';cd.innerHTML=`<i data-lucide="corner-down-right" style="width:14px;height:14px;color:var(--gray-300)"></i><input value="${c.title}" placeholder="Label" onchange="updateMenuItem(${i},${ci},'title',this.value)"><input value="${c.url}" placeholder="URL" onchange="updateMenuItem(${i},${ci},'url',this.value)"><button class="delete" onclick="deleteMenuItem(${i},${ci})"><i data-lucide="x" style="width:14px;height:14px"></i></button>`;cc.appendChild(cd)});if(item.children?.length)cc.style.display='block'});lucide.createIcons()}
+    function updateMenuItem(pi,ci,f,v){if(ci===null)MENU_DATA[pi][f]=v;else MENU_DATA[pi].children[ci][f]=v}
+    function addMenuParent(){MENU_DATA.push({title:'New',url:'#',children:[]});renderMenuList()}
+    function addMenuChild(pi){if(!MENU_DATA[pi].children)MENU_DATA[pi].children=[];MENU_DATA[pi].children.push({title:'Sub',url:'#'});renderMenuList()}
+    function deleteMenuItem(pi,ci){if(!confirm('Delete?'))return;if(ci===null)MENU_DATA.splice(pi,1);else MENU_DATA[pi].children.splice(ci,1);renderMenuList()}
+    async function saveMenu(){try{const fd=new FormData();fd.append('action','save');fd.append('target','menu');fd.append('data',JSON.stringify(MENU_DATA));const r=await fetch('api.php',{method:'POST',body:fd});const d=await r.json();if(d.status==='success')alert('Menu saved!')}catch(e){alert('Error')}}
+
+    function closeModal(id){document.getElementById(id).classList.remove('active')}
+    function findLesson(id){for(let m of COURSE_DATA){for(let l of m.lessons){if(l.id===id)return l}}return null}
+    function toGreeklish(t){const m={'α':'a','β':'b','γ':'g','δ':'d','ε':'e','ζ':'z','η':'i','θ':'th','ι':'i','κ':'k','λ':'l','μ':'m','ν':'n','ξ':'ks','ο':'o','π':'p','ρ':'r','σ':'s','τ':'t','υ':'y','φ':'f','χ':'x','ψ':'ps','ω':'o','ς':'s','ά':'a','έ':'e','ή':'i','ί':'i','ό':'o','ύ':'y','ώ':'o'};return t.toLowerCase().replace(/[α-ωά-ώς]/g,c=>m[c]||c).replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'')}
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+{
+    "m1": {
+        "startDate": "2024-12-01",
+        "weeks": 12,
+        "periods": [
+            {"name": "Βασική", "weekStart": 1, "weekEnd": 4, "color": "#8b5cf6"},
+            {"name": "Ειδική", "weekStart": 5, "weekEnd": 8, "color": "#3b82f6"},
+            {"name": "Αγωνιστική", "weekStart": 9, "weekEnd": 12, "color": "#22c55e"}
+        ],
+        "workouts": [
+            {
+                "id": "wo_1",
+                "date": "2024-12-02",
+                "title": "Easy Run",
+                "description": "Χαλαρό τρέξιμο για αποκατάσταση",
+                "category": "easy",
+                "duration": 45,
+                "pace": "5:30",
+                "km": 8.2,
+                "intervals": []
+            },
+            {
+                "id": "wo_2",
+                "date": "2024-12-04",
+                "title": "Tempo Run",
+                "description": "20 min tempo at threshold pace",
+                "category": "tempo",
+                "duration": 50,
+                "pace": "4:45",
+                "km": 10.5,
+                "intervals": []
+            },
+            {
+                "id": "wo_3",
+                "date": "2024-12-07",
+                "title": "Long Run",
+                "description": "Μεγάλο τρέξιμο σε χαλαρό ρυθμό",
+                "category": "long",
+                "duration": 90,
+                "pace": "5:45",
+                "km": 15.6,
+                "intervals": []
+            }
+        ]
+    },
+    "m2": {
+        "startDate": "2024-12-01",
+        "weeks": 8,
+        "periods": [],
+        "workouts": []
+    }
+}
